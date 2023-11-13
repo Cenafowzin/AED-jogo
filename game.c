@@ -159,6 +159,7 @@ char texto_pre_ranking (char jogador, int ranking){
     //pausa
     strcpy(vetor[6],"Eles são os Lovelaces: Guardiões da Rainha.");
     //imprime o ranking
+    printf("%s, \n", jogador);
     if (ranking == 1){
         strcpy(vetor[7],"Você é o Marechal dos Lovelaces, o mais alto posto do exército, parabéns!");
     }else if (ranking == 2){
