@@ -53,8 +53,8 @@ int main(int argc, char *argv[]) {
     SDL_Event event;
     int quit = 0;
 
-    while (!quit) {
-        while(SDL_PollEvent(&event)) {
+    while (!quit)  { //loop do jogo
+        while(SDL_PollEvent(&event)) {//pega os inputs
             if(event.type == SDL_QUIT) {
                 quit = 1;
             }else if (event.type == SDL_WINDOWEVENT) {
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
         SDL_Color textColor = {0, 0, 0, 255};
 
         // Renderizar o texto
-        SDL_Surface *textSurface = TTF_RenderUTF8_Blended(font, "DIEGO Designer", textColor);
+        SDL_Surface *textSurface = TTF_RenderUTF8_Blended_Wrapped(font, "DIEGO Designer", textColor, windowWidth - 50);
         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
         SDL_QueryTexture(textTexture, NULL, NULL, &textSurface->w, &textSurface->h);
