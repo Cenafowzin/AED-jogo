@@ -112,39 +112,43 @@ int main(int argc, char *argv[]) {
 }
 
 char introducao (void){
-    char *vetor[10];
+    char *vetor[12];
     char jogador[20];
-    strcpy(vetor[0],"A Rainha Natacha governa o Reino de Aedônia, uma terra famosa pela quantidade de árvores mágicas.");
-    //pausa e limpa a tela
-    strcpy(vetor[1],"De olho nessas árvores, um exército inimigo está marchando em direção à Aedônia, tirando assim a paz e tranquilidade desse reino.");
-    //pausa e limpa a tela
-    strcpy(vetor[2],"A Rainha Natacha soube dessa movimentação quando o alarme atrapalhou-a justo no momento em que estava ensinando sobre o poder mágico das árvores para seus súditos.");
-    //pausa e limpa a tela
-    strcpy(vetor[3],"Prontamente, a rainha Natacha resolveu montar um exército para expulsar os inimigos.");
-    //pausa e limpa a tela
-    strcpy(vetor[4],"Para montar esse exército, ela pediu aos reinos vizinhos seus melhores guerreiros, e colocou-os em pequenas arenas espalhados em sua floresta real.");
+    strcpy(vetor[0],"No majestoso Reino de Aedônia, sob o reinado da benevolente Rainha Natacha, a paz era mantida através do equilíbrio mágico das árvores que adornavam a terra.");
     //pausa
-    strcpy(vetor[5],"Seu objetivo por trás de tudo é formar seu exército real para proteger suas árvores, enfrentando as ameaças da fronteira.");
-    //pausa e limpa a tela
-    strcpy(vetor[6],"A guarda será composta por 20 soldados, dentre eles 1 Marechal (patente mais alta), seguido por um general, um tenente-general e os demais não terão patente específica, mas todos serão os \"Cavaleiros da Rainha\".");
-    //pausa e limpa a tela
-    strcpy(vetor[7],"Entretanto nem tudo são flores, os aspirantes que não conseguirem se juntar aos Cavaleiros da Rainha serão expulsos do reino, devendo se mudar para o reino de Nassau, um reino vizinho à Aedônia, sendo que bem mais pobre.");
+    strcpy(vetor[1],"Contudo, as sombras da intriga se aproximaram quando um exército inimigo, cobiçando o poder das árvores mágicas, ameaçou a tranquilidade do reino.");
     //pausa
-    strcpy(vetor[8],"Será que você vai conseguir?\nDigite seu nome:");
+    strcpy(vetor[2],"O alerta ecoou nos salões reais no exato momento em que a Rainha compartilhava os segredos mágicos das árvores com seus súditos.");
+    //pausa
+    strcpy(vetor[3],"Sem hesitar, Natacha decidiu formar um exército para enfrentar a iminente invasão.");
+    //pausa e limpa a tela
+    strcpy(vetor[4],"Convocando os guerreiros mais destemidos dos reinos vizinhos, a Rainha os colocou em um complexo de arenas espalhadas por sua floresta real, conhecido como de Ceasar's Arena, que fica no 3º distrito de Aedônia.");
+    //pausa
+    strcpy(vetor[5],"O objetivo era claro: forjar um exército real capaz de proteger as preciosas árvores e repelir as ameaças que se aproximavam da fronteira.");
+    //pausa e limpa a tela
+    strcpy(vetor[6],"Entre os soldados, destaca-se a hierarquia, liderada por um Marechal, seguido por um general, um tenente-general e os valorosos \"Cavaleiros da Rainha\".");
+    //pausa e limpa a tela
+    strcpy(vetor[7],"No entanto, nem todo aspirante terá o privilégio de se tornar um Cavaleiro da Rainha...");
+    //pausa
+    strcpy(vetor[8],"Aqueles que não atingirem tal honra serão exilados para o humilde reino de Nassau, vizinho a Aedônia, mas notavelmente mais carente.");
+    //pausa e limpa a tela
+    strcpy(vetor[9],"O desafio está lançado: será que você, como jogador, terá a coragem e a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha Natacha a preservar a magia de seu reino?");
+    //pausa
+    strcpy(vetor[10],"Como se chama?\n");
     scanf("%s", jogador);
     //pausa e limpa a tela
-    strcpy(vetor[9],"Bem vindo, ");
-    strcat(vetor[9], jogador);
-    strcat(vetor[9], "!");
+    strcpy(vetor[11],"Bem vindo, ");
+    strcat(vetor[11], jogador);
+    strcat(vetor[11], "!");
     //pausa
-    strcpy(vetor[10],"Agora você é um aspirante a Cavaleiro da Rainha, e para isso você terá que passar por alguns testes.");
+    strcpy(vetor[12],"Agora você é um aspirante a Cavaleiro da Rainha, e para isso você terá que passar por alguns testes.");
     //pausa e limpa a tela
     return jogador;
 }
 
 //só mostra o texto se conseguir terminar o jogo vivo
 char texto_pre_ranking (char jogador, int ranking){
-    char *vetor[6];
+    char *vetor[8];
     strcpy(vetor[0],"Numa era em que as sombras dançam entre os bosques e os ventos sussurram segredos aos ouvidos das árvores antigas, ");
     //pausa
     strcpy(vetor[1],"surge um grupo destemido de guerreiros, forjados na chama da coragem e moldados pela lealdade inabalável.");
@@ -157,18 +161,20 @@ char texto_pre_ranking (char jogador, int ranking){
     //pausa e limpa a tela
     strcpy(vetor[5],"Que o reino saiba que, quando o chamado ressoar, uma irmandade única se erguerá para defender a coroa com suas vidas.");
     //pausa
-    strcpy(vetor[6],"Eles são os Lovelaces: Guardiões da Rainha.");
+    strcpy(vetor[6],"A população agarrou-se aos bravos guerreiros, atribuindo-lhes um apelido...\n");
+    //pausa
+    strcpy(vetor[7],"Eles são os Lovelaces: Guardiões da Rainha.");
     //imprime o ranking
     printf("%s, \n", jogador);
     if (ranking == 1){
-        strcpy(vetor[7],"Você é o Marechal dos Lovelaces, o mais alto posto do exército, parabéns!");
+        strcpy(vetor[8],"Você é o Marechal dos Lovelaces, o mais alto posto do exército, parabéns!");
     }else if (ranking == 2){
-        strcpy(vetor[7],"Você é o General dos Lovelaces, o segundo posto mais alto do exército, parabéns!");
+        strcpy(vetor[8],"Você é o General dos Lovelaces, o segundo posto mais alto do exército, parabéns!");
     }else if (ranking == 3){
-        strcpy(vetor[7],"Você é o Tenente-General dos Lovelaces, o terceiro posto mais alto do exército, parabéns!");
+        strcpy(vetor[8],"Você é o Tenente-General dos Lovelaces, o terceiro posto mais alto do exército, parabéns!");
     }else if (ranking <= 20){
-        strcpy(vetor[7],"Você é um dos Lovelaces, parabéns!");
+        strcpy(vetor[8],"Você é um dos Lovelaces, parabéns!");
     }else{
-        strcpy(vetor[7],"Você não conseguiu entrar para o exército, mas não desanime, tente novamente!");
+        strcpy(vetor[8],"Você não conseguiu entrar para o exército, mas não desanime, tente novamente!");
     }
 }
