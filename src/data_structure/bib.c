@@ -4,8 +4,17 @@
 #include <string.h>
 #include <unistd.h>
 
+void setUtf8Encoding() {
+    #ifdef _WIN32
+    system("chcp 65001"); // Configura o código de página para UTF-8 no Windows
+    #else
+    printf("\e[1;1H\e[2J"); // Limpa a tela no Linux
+    #endif
+}
+
 //só mostra o texto se conseguir terminar o jogo vivo
 char texto_pre_ranking (char jogador, int ranking){
+    setUtf8Encoding();
     char *vetor[9];
     for (int i = 0; i < 10; ++i) {
         vetor[i] = (char *)malloc(256 * sizeof(char));  // Tamanho arbitrário; ajuste conforme necessário
@@ -48,7 +57,7 @@ char texto_pre_ranking (char jogador, int ranking){
             //aguarda 1 segundo e limpa a tela
             sleep(1);
             printf("\n");
-            //system("clear");
+            //system(CLEAR_SCREEN);
         }
         printf("\n"); // Pula uma linha após imprimir toda a string
         usleep(100000);
@@ -83,10 +92,11 @@ char texto_pre_ranking (char jogador, int ranking){
 }
 
 void introducao (char **jogador){
+    setUtf8Encoding();
     /* é chamado assim:
     char *jogador;
     introducao(&jogador); */
-    system("clear");
+    system(CLEAR_SCREEN);
     char *vetor[13];
     for (int i = 0; i < 14; ++i) {
         vetor[i] = (char *)malloc(256 * sizeof(char));  // Tamanho arbitrário; ajuste conforme necessário
@@ -111,10 +121,11 @@ void introducao (char **jogador){
     //pausa e limpa a tela
     strcpy(vetor[9],"O desafio está lançado: será que você, como jogador, terá a coragem\ne a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha\nNatacha a preservar a magia de seu reino?\n");
     //pausa
-    strcpy(vetor[10],"Como se chama?");
+    strcpy(vetor[10],"Como se chama?\n");
     // Loop para iterar sobre cada string no vetor
     for (int i = 0; i < 11; ++i) {
         // Obtém o comprimento da string atual
+        printf("\n"); // Pula uma linha após imprimir toda a string
         int len = 0;
         while (vetor[i][len] != '\0') {
             len++;
@@ -128,24 +139,27 @@ void introducao (char **jogador){
         }
         if (i==3||i==5||i==6||i==8){
             //recebe input vazio e limpa a tela
-            printf("..");
-            char c;
-            scanf("%c", &c);
-            getchar();
-            system("clear");
+            printf(".. \n(Press Enter)");
+            char c='a';
+            while (c!='\n'){
+                scanf("%c", &c);
+            }
+            system(CLEAR_SCREEN);
         }
-        printf("\n"); // Pula uma linha após imprimir toda a string
+        
         usleep(200000);
     }
     *jogador = (char *)malloc(256 * sizeof(char));
     scanf("%s", *jogador);
     getchar();
+    system(CLEAR_SCREEN);
     //pausa e limpa a tela
     strcpy(vetor[11],"Bem vindo, ");
     strcat(vetor[11], *jogador);
     strcat(vetor[11], "!");
     strcpy(vetor[12],"Agora você é um aspirante a Cavaleiro da Rainha, e para isso você\nterá que passar por alguns testes...\n");
     for (int i = 11; i < 13; ++i) {
+        printf("\n"); // Pula uma linha após imprimir toda a string
         // Obtém o comprimento da string atual
         int len = 0;
         while (vetor[i][len] != '\0') {
@@ -160,12 +174,12 @@ void introducao (char **jogador){
         }
         if (i==12){
             //recebe input vazio e limpa a tela
-            printf("Vamos começar?\n");
+            printf("\nVamos começar?\n");
             char c;
             scanf("%c", &c);
-            system("clear");
+            system(CLEAR_SCREEN);
         }
-        printf("\n"); // Pula uma linha após imprimir toda a string
+        
         usleep(100000);
 
     }   
@@ -173,8 +187,9 @@ void introducao (char **jogador){
 
 //disclaimer
 void disclaimer(void) {
+    setUtf8Encoding();
     // Limpa a tela
-    system("clear");
+    system(CLEAR_SCREEN);
 
     // Aguarda por 2 segundos
     sleep(1);
@@ -189,7 +204,7 @@ void disclaimer(void) {
     sleep(5);
 
     // Limpa a tela
-    system("clear");
+    system(CLEAR_SCREEN);
 
     printf("Classificação PEGI 12: Este jogo é recomendado para maiores de 12 anos\n"
     "e pode conter violência leve, linguagem moderada ou temas sugestivos.\n"
@@ -197,7 +212,7 @@ void disclaimer(void) {
     // Aguarda por 5 segundos
     sleep(5);
     // Exibe a mensagem preta na tela
-    system("clear");
+    system(CLEAR_SCREEN);
     // Aguarda por 2 segundos
     sleep(1);
     fflush(stdout);

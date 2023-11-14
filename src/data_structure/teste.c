@@ -3,12 +3,26 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifdef _WIN32
+#define CLEAR_SCREEN "cls"
+#else
+#define CLEAR_SCREEN "clear"
+#endif
+
+void setUtf8Encoding() {
+    #ifdef _WIN32
+    system("chcp 65001"); // Configura o código de página para UTF-8 no Windows
+    #else
+    printf("\e[1;1H\e[2J"); // Limpa a tela no Linux
+    #endif
+}
 
 void introducao (char **jogador){
+    setUtf8Encoding();
     /* é chamado assim:
     char *jogador;
     introducao(&jogador); */
-    system("clear");
+    system(CLEAR_SCREEN);
     char *vetor[13];
     for (int i = 0; i < 14; ++i) {
         vetor[i] = (char *)malloc(256 * sizeof(char));  // Tamanho arbitrário; ajuste conforme necessário
@@ -53,7 +67,7 @@ void introducao (char **jogador){
             printf("..");
             char c;
             scanf("%c", &c);
-            system("clear");
+            system(CLEAR_SCREEN);
         }
         printf("\n"); // Pula uma linha após imprimir toda a string
         usleep(200000);
@@ -88,8 +102,9 @@ void introducao (char **jogador){
 
 //disclaimer
 void disclaimer(void) {
+    setUtf8Encoding();
     // Limpa a tela
-    system("clear");
+    system(CLEAR_SCREEN);
 
     // Aguarda por 2 segundos
     sleep(1);
@@ -104,7 +119,7 @@ void disclaimer(void) {
     sleep(5);
 
     // Limpa a tela
-    system("clear");
+    system(CLEAR_SCREEN);
 
     printf("Classificação PEGI 12: Este jogo é recomendado para maiores de 12 anos\n"
     "e pode conter violência leve, linguagem moderada ou temas sugestivos.\n"
@@ -112,7 +127,7 @@ void disclaimer(void) {
     // Aguarda por 5 segundos
     sleep(5);
     // Exibe a mensagem preta na tela
-    system("clear");
+    system(CLEAR_SCREEN);
     // Aguarda por 2 segundos
     sleep(1);
     fflush(stdout);
@@ -126,7 +141,7 @@ int main() {
 
     // Faça o que for necessário com o nome do jogador
     // Limpa a tela antes de exibir o disclaimer
-    system("clear");
+    system(CLEAR_SCREEN);
     // Faça o que for necessário após o disclaimer
     // Libera a memória alocada para o nome do jogador
     free(jogador);

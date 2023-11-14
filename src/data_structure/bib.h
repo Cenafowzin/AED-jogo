@@ -1,6 +1,12 @@
 #ifndef __BIB_GAME__
 #define __BIB_GAME__
 
+#ifdef _WIN32
+#define CLEAR_SCREEN "cls"
+#else
+#define CLEAR_SCREEN "clear"
+#endif
+
 typedef struct Item{
     char *name;
     int healthMod;
@@ -47,7 +53,9 @@ typedef struct room{
     Enemy *enemy;
 }Room;
 
+void setUtf8Encoding();
 char texto_pre_ranking (char jogador, int ranking);
-char introducao (char **jogador);
+void introducao (char **jogador);
+void disclaimer(void);
 
 #endif
