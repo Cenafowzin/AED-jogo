@@ -67,6 +67,19 @@ char texto_pre_ranking (char jogador, int ranking){
     }else{
         strcpy(vetor[8],"Você não conseguiu entrar para o exército, mas não desanime, tente novamente!");
     }
+    int len = 0;
+    while (vetor[8][len] != '\0') {
+        len++;
+    }
+    for (int j = 0; j < len; ++j) {
+        // Imprime o caractere atual
+        printf("%c", vetor[8][j]);
+        fflush(stdout);
+        usleep(10000);
+    }
+    printf("\n\n");
+    usleep(100000);
+    //imprimir o ranking completo
 }
 
 void introducao (char **jogador){
@@ -169,10 +182,14 @@ void disclaimer(void) {
     // Limpa a tela
     system("clear");
 
-    // Aguarda por 2 segundos
-    sleep(1);
-
+    printf("Classificação PEGI 12: Este jogo é recomendado para maiores de 12 anos\n"
+    "e pode conter violência leve, linguagem moderada ou temas sugestivos.\n"
+    "Os pais devem considerar o conteúdo antes de permitir que seus filhos joguem.\n");
+    // Aguarda por 5 segundos
+    sleep(5);
     // Exibe a mensagem preta na tela
     system("clear");
+    // Aguarda por 2 segundos
+    sleep(1);
     fflush(stdout);
 }

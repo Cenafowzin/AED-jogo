@@ -1,5 +1,7 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 void introducao (char **jogador){
     /* é chamado assim:
@@ -101,11 +103,15 @@ void disclaimer(void) {
     // Limpa a tela
     system("clear");
 
-    // Aguarda por 2 segundos
-    sleep(1);
-
+    printf("Classificação PEGI 12: Este jogo é recomendado para maiores de 12 anos\n"
+    "e pode conter violência leve, linguagem moderada ou temas sugestivos.\n"
+    "Os pais devem considerar o conteúdo antes de permitir que seus filhos joguem.\n");
+    // Aguarda por 5 segundos
+    sleep(5);
     // Exibe a mensagem preta na tela
     system("clear");
+    // Aguarda por 2 segundos
+    sleep(1);
     fflush(stdout);
 }
 
