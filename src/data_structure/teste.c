@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+
 void introducao (char **jogador){
     /* é chamado assim:
     char *jogador;
@@ -12,25 +13,25 @@ void introducao (char **jogador){
     for (int i = 0; i < 14; ++i) {
         vetor[i] = (char *)malloc(256 * sizeof(char));  // Tamanho arbitrário; ajuste conforme necessário
     }
-    strcpy(vetor[0],"No majestoso Reino de Aedônia, sob o reinado da benevolente Rainha Natacha, a paz era mantida através do equilíbrio mágico das árvores que adornavam a terra.");
+    strcpy(vetor[0],"No majestoso Reino de Aedônia, sob o reinado da benevolente Rainha Natacha,\na paz era mantida através do equilíbrio mágico das árvores que adornavam a terra.\n");
     //pausa
-    strcpy(vetor[1],"Contudo, as sombras da intriga se aproximaram quando um exército inimigo, cobiçando o poder das árvores mágicas, ameaçou a tranquilidade do reino.");
+    strcpy(vetor[1],"Contudo, as sombras da intriga se aproximaram quando um exército inimigo,\ncobiçando o poder das árvores mágicas, ameaçou a tranquilidade do reino.\n");
     //pausa
-    strcpy(vetor[2],"O alerta ecoou nos salões reais no exato momento em que a Rainha compartilhava os segredos mágicos das árvores com seus súditos.");
+    strcpy(vetor[2],"O alerta ecoou nos salões reais no exato momento em que a Rainha compartilhava\nos segredos mágicos das árvores com seus súditos.\n");
     //pausa
     strcpy(vetor[3],"Sem hesitar, Natacha decidiu formar um exército para enfrentar a iminente invasão.");
     //pausa e limpa a tela
-    strcpy(vetor[4],"Convocando os guerreiros mais destemidos dos reinos vizinhos, a Rainha os colocou em um complexo de arenas espalhadas por sua floresta real, conhecido como de Ceasar's Arena, que fica no 3º distrito de Aedônia.");
+    strcpy(vetor[4],"Convocando os guerreiros mais destemidos dos reinos vizinhos, a Rainha os colocou\nem um complexo de arenas espalhadas por sua floresta real, conhecido como\nCeasar's Arena, que fica no 3º distrito de Aedônia.\n");
     //pausa
-    strcpy(vetor[5],"O objetivo era claro: forjar um exército real capaz de proteger as preciosas árvores e repelir as ameaças que se aproximavam da fronteira.");
+    strcpy(vetor[5],"O objetivo era claro: forjar um exército real capaz de proteger as preciosas árvores\ne repelir as ameaças que se aproximavam da fronteira.");
     //pausa e limpa a tela
-    strcpy(vetor[6],"Entre os soldados, destaca-se a hierarquia, liderada por um Marechal, seguido por um general, um tenente-general e os valorosos \"Cavaleiros da Rainha\".");
+    strcpy(vetor[6],"Entre os soldados, destaca-se a hierarquia, liderada por um Marechal,\nseguido por um general, um tenente-general e os valorosos \"Cavaleiros da Rainha\".");
     //pausa e limpa a tela
-    strcpy(vetor[7],"No entanto, nem todo aspirante terá o privilégio de se tornar um Cavaleiro da Rainha...");
+    strcpy(vetor[7],"No entanto, nem todo aspirante terá o privilégio de se tornar um Cavaleiro da Rainha...\n");
     //pausa
-    strcpy(vetor[8],"Aqueles que não atingirem tal honra serão exilados para o humilde reino de Nassau, vizinho a Aedônia, mas notavelmente mais carente.");
+    strcpy(vetor[8],"Aqueles que não atingirem tal honra serão exilados para o humilde reino de Nassau,\nvizinho a Aedônia, mas notavelmente mais carente.");
     //pausa e limpa a tela
-    strcpy(vetor[9],"O desafio está lançado: será que você, como jogador, terá a coragem e a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha Natacha a preservar a magia de seu reino?");
+    strcpy(vetor[9],"O desafio está lançado: será que você, como jogador, terá a coragem\ne a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha\nNatacha a preservar a magia de seu reino?\n");
     //pausa
     strcpy(vetor[10],"Como se chama?");
     // Loop para iterar sobre cada string no vetor
@@ -55,15 +56,16 @@ void introducao (char **jogador){
             system("clear");
         }
         printf("\n"); // Pula uma linha após imprimir toda a string
-        usleep(100000);
+        usleep(200000);
     }
     *jogador = (char *)malloc(256 * sizeof(char));
     scanf("%s", *jogador);
+    getchar();
     //pausa e limpa a tela
     strcpy(vetor[11],"Bem vindo, ");
     strcat(vetor[11], *jogador);
     strcat(vetor[11], "!");
-    strcpy(vetor[12],"Agora você é um aspirante a Cavaleiro da Rainha, e para isso você terá que passar por alguns testes.");
+    strcpy(vetor[12],"Agora você é um aspirante a Cavaleiro da Rainha, e para isso você\nterá que passar por alguns testes...\nVamos começar?\n");
     for (int i = 11; i < 13; ++i) {
         // Obtém o comprimento da string atual
         int len = 0;
@@ -79,8 +81,9 @@ void introducao (char **jogador){
         }
         printf("\n"); // Pula uma linha após imprimir toda a string
         usleep(100000);
-
-    }   
+    }  
+    char c;
+    scanf("%c", &c);
 }
 
 //disclaimer
