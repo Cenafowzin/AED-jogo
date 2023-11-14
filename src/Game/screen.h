@@ -31,5 +31,6 @@ void destoryScreen(ScreenResult screen);
 int disclaimerScene(ScreenResult *screen, int *lastFrameTime);
 void mainMenu(int *gameState, ScreenResult *screen, int *lastFrameTime);
 void setup();
+int introducao(ScreenResult *screen, int *lastFrameTime);
 
 #endif

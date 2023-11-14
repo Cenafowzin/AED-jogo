@@ -6,6 +6,8 @@
 #include <include/SDL2/SDL.h>
 #include <include/SDL2/SDL_ttf.h>
 
+char texto_pre_ranking (char jogador, int ranking);
+
 int main(int argc, char *argv[]) {
     int lastFrameTime = 0;
     int gameState = MAIN_MENU;
@@ -15,7 +17,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Error initializing screen.\n");
         return 1;
     }
-
     gameState = disclaimerScene(&screen, &lastFrameTime);
     while(gameState > 0){
         switch (gameState){
@@ -25,6 +26,7 @@ int main(int argc, char *argv[]) {
                 break;
             case GAME:
                 printf("game\n");
+                gameState = introducao(&screen, &lastFrameTime);
                 gameState = MAIN_MENU;
                 break;
             case SCORE_BOARD:
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-char introducao (void){
+/* char introducao (void){
     char *vetor[12];
     char jogador[20];
     strcpy(vetor[0],"No majestoso Reino de Aedônia, sob o reinado da benevolente Rainha Natacha, a paz era mantida através do equilíbrio mágico das árvores que adornavam a terra.");
@@ -80,7 +82,7 @@ char introducao (void){
     strcpy(vetor[12],"Agora você é um aspirante a Cavaleiro da Rainha, e para isso você terá que passar por alguns testes.");
     //pausa e limpa a tela
     return jogador;
-}
+} */
 
 //só mostra o texto se conseguir terminar o jogo vivo
 char texto_pre_ranking (char jogador, int ranking){
