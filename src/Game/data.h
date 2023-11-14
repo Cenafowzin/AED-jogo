@@ -1,50 +1,52 @@
-#ifndef __LIB_GAME__
-#define __LIB_GAME__
+#ifndef __GAME_DATA_LIB__
+#define  __GAME_DATA_LIB__
 
-typedef struct item{
+typedef struct Item{
     char *name;
     int healthMod;
     int moneyMod;
     int attackMod;
     int defenseMod;
     int uses;
-}item;
+}Item;
 
-typedef struct player{
+typedef struct Player{
     char name[21];
     int health;
     int money;
     int armorClass;
-    item *armor;
-    item *weapon;
-    item *inventory[6];
-}player;
+    Item *armor;
+    Item *weapon;
+    Item *inventory[6];
+}Player;
 
-typedef struct move{
+typedef struct Move{
     char *name;
     char *text;
     int damage;
     int armorDebuff;
     int attackDebuff;
     int stunRounds;
-}move;
+}Move;
 
-typedef struct enemy{
+typedef struct Enemy{
     char *name;
     char *text;
     int health;
     int armorClass;
     int moneyDrop;
-    item *itemDrop;
-    move *moves[4];
-}enemy;
+    Item *itemDrop;
+    Move *moves[4];
+}Enemy;
 
-typedef struct room{
+typedef struct Room{
     int id;
     char *text;
     int money;
-    item *loot;
-    enemy *enemy;
-}room;
+    Item *loot;
+    Enemy *enemy;
+    struct Room *left;
+    struct Room *right;
+}Room;
 
 #endif

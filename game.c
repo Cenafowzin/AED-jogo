@@ -1,4 +1,4 @@
-#include "Game/lib.h"
+#include "Game/data.h"
 #include "Game/screen.h"
 #include <stdlib.h>
 #include <stdio.h>
