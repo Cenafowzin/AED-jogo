@@ -49,7 +49,7 @@ ScreenResult initializeWindow(void){
         return result;
     }
 
-    result.font = TTF_OpenFont("src/fonts/Pokemon_Classic.ttf", 16);
+    result.font = TTF_OpenFont("src/fonts/Pokemon_Classic.ttf", 25);
 
     if(!result.font){
         fprintf(stderr, "Error initializing TTF Font: %s\n", TTF_GetError());
@@ -79,7 +79,7 @@ int disclaimerScene(ScreenResult *screen, int *lastFrameTime){
     int texH = 0;
 
     const char *disclaimerText =
-        "Esta obra é fictícia e qualquer semelhança com pessoas reais, "
+        "Esta obra é fictícia e qualquer semelhança com pessoas reais,"
         "vivas ou mortas, é mera coincidência. Eventuais referências a "
         "eventos históricos, locais ou situações são puramente coincidentais "
         "e não devem ser interpretadas como fatos reais. Qualquer analogia "
@@ -302,4 +302,109 @@ void destoryScreen(ScreenResult screen){
     SDL_DestroyWindow(screen.window);
     TTF_Quit();
     SDL_Quit();
+}
+int introducao(ScreenResult *screen, int *lastFrameTime) {
+    SDL_Color color = {255, 255, 255, 255};
+    int texW = 0;
+    int texH = 0;
+
+    char *vetor[13];
+    char jogador[20];
+
+    // Aloca espaço para cada mensagem
+    for (int i = 0; i < 13; ++i) {
+        vetor[i] = (char *)malloc(256 * sizeof(char));  // Tamanho arbitrário; ajuste conforme necessário
+    }
+
+    strcpy(vetor[0], "No majestoso Reino de Aedônia, sob o reinado da benevolente Rainha Natacha, a paz era mantida através do equilíbrio mágico das árvores que adornavam a terra.");
+    strcpy(vetor[1], "Contudo, as sombras da intriga se aproximaram quando um exército inimigo, cobiçando o poder das árvores mágicas, ameaçou a tranquilidade do reino.");
+    strcpy(vetor[2], "O alerta ecoou nos salões reais no exato momento em que a Rainha compartilhava os segredos mágicos das árvores com seus súditos.");
+    strcpy(vetor[3], "Sem hesitar, Natacha decidiu formar um exército para enfrentar a iminente invasão.");
+    strcpy(vetor[4], "Convocando os guerreiros mais destemidos dos reinos vizinhos, a Rainha os colocou em um complexo de arenas espalhadas por sua floresta real, conhecido como de Ceasar's Arena, que fica no 3º distrito de Aedônia.");
+    strcpy(vetor[5], "O objetivo era claro: forjar um exército real capaz de proteger as preciosas árvores e repelir as ameaças que se aproximavam da fronteira.");
+    strcpy(vetor[6], "Entre os soldados, destaca-se a hierarquia, liderada por um Marechal, seguido por um general, um tenente-general e os valorosos \"Cavaleiros da Rainha\".");
+    strcpy(vetor[7], "No entanto, nem todo aspirante terá o privilégio de se tornar um Cavaleiro da Rainha...");
+    strcpy(vetor[8], "Aqueles que não atingirem tal honra serão exilados para o humilde reino de Nassau, vizinho a Aedônia, mas notavelmente mais carente.");
+    strcpy(vetor[9], "O desafio está lançado: será que você, como jogador, terá a coragem e a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha Natacha a preservar a magia de seu reino?");
+    strcpy(vetor[10], "Como se chama?\n");
+
+    SDL_Event event;
+
+    for (int i = 0; i < 11; ++i) {
+        SDL_PollEvent(&event);
+
+        switch (event.type) {
+            case SDL_QUIT:
+                return 0;
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    return 0;
+                }
+                if (event.key.keysym.sym == SDLK_SPACE) {
+                    color.a = 1;
+                }
+                break;
+        }
+
+        int timeToWait = 500; // Pausa de 0,5 segundo
+        SDL_Delay(timeToWait);
+
+        // Limpa a tela após a última mensagem
+        if (i == 10) {
+            printf("Pressione qualquer tecla para continuar...");
+            getchar(); // Aguarda entrada do teclado
+            system("clear || cls"); // Limpa a tela
+        }
+
+        // Imprime os caracteres na velocidade de 0,1s por caractere
+        for (int j = 0; vetor[i][j] != '\0'; ++j) {
+            printf("%c", vetor[i][j]);
+            SDL_Delay(10);
+        }
+
+        // Renderiza o texto na tela
+        SDL_SetRenderDrawColor(screen->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(screen->renderer);
+
+        SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(screen->font, vetor[i], color, WINDOW_WIDTH - 50);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(screen->renderer, surface);
+        SDL_FreeSurface(surface);
+
+        SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+
+        SDL_Rect dstrect = {(WINDOW_WIDTH - texW) / 2, (WINDOW_HEIGHT - texH) / 2, texW, texH};
+
+        SDL_RenderCopy(screen->renderer, texture, NULL, &dstrect);
+
+        SDL_RenderPresent(screen->renderer);
+        SDL_DestroyTexture(texture);
+    }
+
+    // Solicita o nome do jogador
+    scanf("%s", jogador);
+
+    // Concatena a mensagem de boas-vindas
+    strcat(vetor[11], "Bem vindo, ");
+    strcat(vetor[11], jogador);
+    strcat(vetor[11], "!");
+
+    // Adiciona a última mensagem ao vetor
+    strcpy(vetor[12], "Agora você é um aspirante a Cavaleiro da Rainha, e para isso você terá que passar por alguns testes.");
+
+    // Renderiza a última mensagem
+    SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(screen->font, vetor[12], color, WINDOW_WIDTH - 50);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(screen->renderer, surface);
+    SDL_FreeSurface(surface);
+
+    SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+
+    SDL_Rect dstrect = {(WINDOW_WIDTH - texW) / 2, (WINDOW_HEIGHT - texH) / 2, texW, texH};
+
+    SDL_RenderCopy(screen->renderer, texture, NULL, &dstrect);
+
+    SDL_RenderPresent(screen->renderer);
+    SDL_DestroyTexture(texture);
+
+    return 1;
 }
