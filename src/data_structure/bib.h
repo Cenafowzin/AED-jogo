@@ -47,4 +47,7 @@ typedef struct room{
     Enemy *enemy;
 }Room;
 
+char texto_pre_ranking (char jogador, int ranking);
+char introducao (char **jogador);
+
 #endif
