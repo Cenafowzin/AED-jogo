@@ -198,7 +198,7 @@ void disclaimer(void) {
            "históricos, locais ou situações são puramente coincidentais e não devem\n"
            "ser interpretadas como fatos reais. Qualquer analogia com a realidade é\n"
            "completamente não intencional. Este é um produto de ficção e destina-se\n"
-           "exclusivamente para entretenimento.");
+           "exclusivamente para entretenimento.\n");
 
     // Aguarda por 5 segundos
     sleep(5);
@@ -206,8 +206,8 @@ void disclaimer(void) {
     // Limpa a tela
     system(CLEAR_SCREEN);
 
-    printf("Classificação PEGI 12: Este jogo é recomendado para maiores de 12 anos\n"
-    "e pode conter violência leve, linguagem moderada ou temas sugestivos.\n"
+    printf("Classificação PEGI 7: Este jogo é recomendado para maiores de 7 anos.\n"
+    "Pode conter formas leves de violência ou linguagem, moderadas e não perturbadoras para crianças mais novas.\n"
     "Os pais devem considerar o conteúdo antes de permitir que seus filhos joguem.\n");
     // Aguarda por 5 segundos
     sleep(5);
