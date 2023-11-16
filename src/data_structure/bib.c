@@ -217,3 +217,87 @@ void disclaimer(void) {
     sleep(1);
     fflush(stdout);
 }
+
+//insere uma sala na lista circular
+void circ_room_insert (Room *room, Room **head, Room **tail){
+    if (*head == NULL){
+        *head = room;
+        *tail = room;
+        room->left = room;
+        room->right = room;
+    }else{
+        room->left = *tail;
+        room->right = *head;
+        (*tail)->right = room;
+        (*head)->left = room;
+        *tail = room;
+    }
+}
+
+void avl_room_insert (Room *room, Room **root){
+    if (*root == NULL){
+        *root = room;
+    }else{
+        if (room->id < (*root)->id){
+            avl_room_insert(room, &(*root)->left);
+        }else{
+            avl_room_insert(room, &(*root)->right);
+        }
+    }
+}
+void rotate_right (Room **root){
+    if (*root == NULL || (*root)->left == NULL){
+        return;
+    }
+    Room *aux = (*root)->left;
+    (*root)->left = aux->right;
+    aux->right = *root;
+    *root = aux;
+}
+void rotate_left (Room **root){
+    if (*root == NULL || (*root)->right == NULL){
+        return;
+    }
+    Room *aux = (*root)->right;
+    (*root)->right = aux->left;
+    aux->left = *root;
+    *root = aux;
+}
+void rotate_double_right (Room **root){
+    rotate_left(&(*root)->left);
+    rotate_right(root);
+}
+void rotate_double_left (Room **root){
+    rotate_right(&(*root)->right);
+    rotate_left(root);
+}
+
+//função para balancear a árvore
+void balance_tree (Room **root){
+    if (*root == NULL){
+        return;
+    }
+    Room *aux;
+    int balance =  height((*root)->right) - height((*root)->left);
+
+    if (balance > 1){
+        aux=(*root)->right;
+        balance = height(aux->right) - height(aux->left);
+        
+        if (balance < 0){
+            rotate_double_left(root);
+        }else{
+            rotate_left(root);
+        }
+    }else if (balance < -1){
+        aux=(*root)->left;
+        balance = height(aux->right) - height(aux->left);
+
+        if (balance > 0){
+            rotate_double_right(root);
+        }else{
+            rotate_right(root);
+        }
+    }
+}
+

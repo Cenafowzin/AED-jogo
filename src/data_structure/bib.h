@@ -51,11 +51,22 @@ typedef struct room{
     int money;
     Item *loot;
     Enemy *enemy;
+    struct room *left;
+    struct room *right;
 }Room;
 
 void setUtf8Encoding();
 char texto_pre_ranking (char jogador, int ranking);
 void introducao (char **jogador);
 void disclaimer(void);
+void circ_room_insert (Room *room, Room **head, Room **tail);
+void avl_room_insert (Room *room, Room **root);
+void rotate_double_right (Room **root);
+void rotate_double_left (Room **root);
+void rotate_right (Room **root);
+void rotate_left (Room **root);
+void balance_tree (Room **root);
+
+
 
 #endif

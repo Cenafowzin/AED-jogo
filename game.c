@@ -49,7 +49,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-/* char introducao (void){
+/* 
+char introducao (void){
     char *vetor[12];
     char jogador[20];
     strcpy(vetor[0],"No majestoso Reino de Aedônia, sob o reinado da benevolente Rainha Natacha, a paz era mantida através do equilíbrio mágico das árvores que adornavam a terra.");
