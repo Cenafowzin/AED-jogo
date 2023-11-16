@@ -13,7 +13,7 @@ void setUtf8Encoding() {
 }
 
 //só mostra o texto se conseguir terminar o jogo vivo
-char texto_pre_ranking (char jogador, int ranking){
+char textoPreRanking (char jogador, int ranking){
     setUtf8Encoding();
     char *vetor[9];
     for (int i = 0; i < 10; ++i) {
@@ -219,7 +219,7 @@ void disclaimer(void) {
 }
 
 //insere uma sala na lista circular
-void circ_room_insert (Room *room, Room **head, Room **tail){
+void circRoomInsert (Room *room, Room **head, Room **tail){
     if (*head == NULL){
         *head = room;
         *tail = room;
@@ -234,18 +234,18 @@ void circ_room_insert (Room *room, Room **head, Room **tail){
     }
 }
 
-void avl_room_insert (Room *room, Room **root){
+void avlRoomInsert (Room *room, Room **root){
     if (*root == NULL){
         *root = room;
     }else{
         if (room->id < (*root)->id){
-            avl_room_insert(room, &(*root)->left);
+            avlRoomInsert(room, &(*root)->left);
         }else{
-            avl_room_insert(room, &(*root)->right);
+            avlRoomInsert(room, &(*root)->right);
         }
     }
 }
-void rotate_right (Room **root){
+void rotateRight (Room **root){
     if (*root == NULL || (*root)->left == NULL){
         return;
     }
@@ -254,7 +254,7 @@ void rotate_right (Room **root){
     aux->right = *root;
     *root = aux;
 }
-void rotate_left (Room **root){
+void rotateLeft (Room **root){
     if (*root == NULL || (*root)->right == NULL){
         return;
     }
@@ -263,17 +263,17 @@ void rotate_left (Room **root){
     aux->left = *root;
     *root = aux;
 }
-void rotate_double_right (Room **root){
-    rotate_left(&(*root)->left);
-    rotate_right(root);
+void rotateDoubleRight (Room **root){
+    rotateLeft(&(*root)->left);
+    rotateRight(root);
 }
-void rotate_double_left (Room **root){
-    rotate_right(&(*root)->right);
-    rotate_left(root);
+void rotateDoubleLeft (Room **root){
+    rotateRight(&(*root)->right);
+    rotateLeft(root);
 }
 
 //função para balancear a árvore
-void balance_tree (Room **root){
+void balanceTree (Room **root){
     if (*root == NULL){
         return;
     }
@@ -285,18 +285,18 @@ void balance_tree (Room **root){
         balance = height(aux->right) - height(aux->left);
         
         if (balance < 0){
-            rotate_double_left(root);
+            rotateDoubleLeft(root);
         }else{
-            rotate_left(root);
+            rotateLeft(root);
         }
     }else if (balance < -1){
         aux=(*root)->left;
         balance = height(aux->right) - height(aux->left);
 
         if (balance > 0){
-            rotate_double_right(root);
+            rotateDoubleRight(root);
         }else{
-            rotate_right(root);
+            rotateRight(root);
         }
     }
 }

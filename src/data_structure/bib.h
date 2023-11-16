@@ -56,16 +56,16 @@ typedef struct room{
 }Room;
 
 void setUtf8Encoding();
-char texto_pre_ranking (char jogador, int ranking);
+char textoPreRanking (char jogador, int ranking);
 void introducao (char **jogador);
 void disclaimer(void);
-void circ_room_insert (Room *room, Room **head, Room **tail);
-void avl_room_insert (Room *room, Room **root);
-void rotate_double_right (Room **root);
-void rotate_double_left (Room **root);
-void rotate_right (Room **root);
-void rotate_left (Room **root);
-void balance_tree (Room **root);
+void circRoomInsert (Room *room, Room **head, Room **tail);
+void avlRoomInsert (Room *room, Room **root);
+void rotateDoubleRight (Room **root);
+void rotateDoubleLeft (Room **root);
+void rotateRight (Room **root);
+void rotateLeft (Room **root);
+void balanceTree (Room **root);
 
 
 
