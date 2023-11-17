@@ -4,6 +4,7 @@
         "sdl.h": "c",
         "stdlib.h": "c",
         "screen.h": "c",
-        "lib.h": "c"
+        "lib.h": "c",
+        "string.h": "c"
     }
 }

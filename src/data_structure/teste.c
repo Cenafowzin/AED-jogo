@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "bib.h"
 
 #ifdef _WIN32
 #define CLEAR_SCREEN "cls"

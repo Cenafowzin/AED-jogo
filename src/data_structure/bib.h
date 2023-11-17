@@ -7,66 +7,73 @@
 #define CLEAR_SCREEN "clear"
 #endif
 
-typedef struct Item{
-    char *name;
-    int healthMod;
-    int moneyMod;
-    int attackMod;
-    int defenseMod;
-    int uses;
-}Item;
+typedef struct Item {
+  char *name;
+  char *text;
+  int healthMod;
+  int moneyMod;
+  int damage;
+  int attackMod;
+  int defenseMod;
+  int uses;
+} Item;
 
-typedef struct Player{
-    char name[21];
-    int health;
-    int money;
-    int armorClass;
-    Item *armor;
-    Item *weapon;
-    Item *inventory[6];
-}Player;
+typedef struct Move {
+  char *name;
+  char *text;
+  int damage;
+  int armorDebuff;
+  int attackDebuff;
+  int stunRounds;
+} Move;
 
-typedef struct Move{
-    char *name;
-    char *text;
-    int damage;
-    int armorDebuff;
-    int attackDebuff;
-    int stunRounds;
-}Move;
+typedef struct Actor {
+  char *name;
+  char *text;
+  int health;
+  int armorClass;
+  int moneyDrop;
+  Item *itemDrop;
+  Move *moves[4];
+} Actor;
 
-typedef struct Enemy{
-    char *name;
-    char *text;
-    int health;
-    int armorClass;
-    int moneyDrop;
-    Item *itemDrop;
-    Move *moves[4];
-}Enemy;
+typedef struct Room {
+  int id;
+  char *text;
+  int damage;
+  int money;
+  Item *loot;
+  Actor *enemy;
+  Actor *ally;
+  struct Room *left;
+  struct Room *right;
+} Room;
 
-typedef struct room{
-    int id;
-    char *text;
-    int money;
-    Item *loot;
-    Enemy *enemy;
-    struct room *left;
-    struct room *right;
-}Room;
+typedef struct Player {
+  char name[21];
+  int health;
+  int money;
+  int armorClass;
+  Item *armor;
+  Item *weapon;
+  Item *inventory[6];
+  Actor *companion;
+} Player;
 
 void setUtf8Encoding();
 char textoPreRanking (char jogador, int ranking);
 void introducao (char **jogador);
 void disclaimer(void);
-void circRoomInsert (Room *room, Room **head, Room **tail);
 void avlRoomInsert (Room *room, Room **root);
-void rotateDoubleRight (Room **root);
-void rotateDoubleLeft (Room **root);
 void rotateRight (Room **root);
 void rotateLeft (Room **root);
 void balanceTree (Room **root);
 
-
+//carregar na memória
+Item *loadItem(const char *name);
+Move *loadMove(const char *name);
+Actor *loadActor(const char *name);
+void circRoomInsert (Room *room, Room **head, Room **tail);
+void circLoadRooms(Room **circHead, Room **circTail);
 
 #endif
