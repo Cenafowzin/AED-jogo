@@ -6,14 +6,20 @@
 // #include <include/SDL2/SDL_ttf.h>
 
 void loadRooms(Room **RoomsHead, Room **RoomsTail){
-    fopen("data/rms.dat", "r");
-    Room *newRoom = (Room*)malloc(sizeof(Room));
+    FILE *roomsFile = fopen("data/rms.dat", "r");
+    int Roomquant;
+    while(){
+        fscanf(roomsFile, &Roomquant);
+        Room *newRoom = (Room*)malloc(sizeof(Room));
+        fread()
 
-    if(!*RoomsHead){
+        if(!*RoomsHead){
 
+        }
     }
+
 }
 
-int main(){
-    return 0;
-}
+// int main(){
+//     return 0;
+// }
