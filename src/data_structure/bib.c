@@ -621,8 +621,8 @@ void grabItem(Player *player,Room *room){
                 printf("0 = cancelar\n");
                 scanf("%d", choice);
                 if(choice > 0 && choice < 7){
-                    choice--;
-                    player->inventory[choice] = room->loot;
+                    //free no item
+                    player->inventory[choice-1] = room->loot;
                 }
             }
         }

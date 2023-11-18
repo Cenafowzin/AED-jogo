@@ -25,8 +25,8 @@ typedef struct Move {
   char *name;
   char *text;
   int damage;
-  int armorDebuff;
-  int attackDebuff;
+  int armorMod;
+  int attackMod;
   int stunRounds;
 } Move;
 

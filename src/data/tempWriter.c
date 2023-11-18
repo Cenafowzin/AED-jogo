@@ -24,10 +24,10 @@ void writeMove() {
   strcpy(move.text, text);
   printf("damage:");
   scanf("%d", &move.damage);
-  printf("armorDebuff:");
-  scanf("%d", &move.armorDebuff);
-  printf("attackDebuff:");
-  scanf("%d", &move.attackDebuff);
+  printf("armorMod:");
+  scanf("%d", &move.armorMod);
+  printf("attackMod:");
+  scanf("%d", &move.attackMod);
   printf("stunRounds:");
   scanf("%d", &move.stunRounds);
   getchar();

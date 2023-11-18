@@ -46,8 +46,8 @@ int main() {
     //     printf("name:%s\n", move->name);
     //     printf("text:%s\n", move->text);
     //     printf("damage:%d\n", move->damage);
-    //     printf("armorDebuff:%d\n", move->armorDebuff);
-    //     printf("attackDebuff:%d\n", move->attackDebuff);
+    //     printf("armorMod:%d\n", move->armorMod);
+    //     printf("attackMod:%d\n", move->attackMod);
     //     printf("stunRounds:%d\n", move->stunRounds);
     // }else{
     //     printf("movimento não existente\n");
@@ -80,8 +80,8 @@ int main() {
     //             printf("name:%s\n", actor->moves[i]->name);
     //             printf("text:%s\n", actor->moves[i]->text);
     //             printf("damage:%d\n", actor->moves[i]->damage);
-    //             printf("armorDebuff:%d\n", actor->moves[i]->armorDebuff);
-    //             printf("attackDebuff:%d\n", actor->moves[i]->attackDebuff);
+    //             printf("armorMod:%d\n", actor->moves[i]->armorMod);
+    //             printf("attackMod:%d\n", actor->moves[i]->attackMod);
     //             printf("stunRounds:%d\n", actor->moves[i]->stunRounds);
     //         }else{
     //             printf("nada\n");
