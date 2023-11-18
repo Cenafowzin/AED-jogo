@@ -226,10 +226,86 @@ void writeRoom(){
   fclose(roomFile);
 }
 
+void writeBossRoom(){
+  Room room;
+  char text[1000];
+  char itemName[50];
+  char *itemSave;
+  char enemyName[50];
+  char *enemySave;
+  char allyName[50];
+  char *allySave;
+  int textSize = 0,itemNameSize = 0, enemyNameSize = 0, allyNameSize = 0, quantCop = 0;
+
+  //cópias
+  printf("Digite a quantidade de cópias da sala:");
+  scanf("%d", &quantCop);
+  getchar();
+  //texto
+  printf("Texto:");
+  fgets(text, 1000, stdin);
+  for (textSize = 0; text[textSize] != '\n'; textSize++);
+  text[textSize] = '\0';
+  textSize++;
+  room.text = malloc((textSize) * sizeof(char));
+  strcpy(room.text, text);
+  //trap damage
+  printf("trap damage:");
+  scanf("%d", &room.damage);
+  //money
+  printf("money:");
+  scanf("%d", &room.money);
+  getchar();
+  //item
+  printf("Item(nome do item):");
+  fgets(itemName, 50, stdin);
+  for (itemNameSize = 0; itemName[itemNameSize] != '\n'; itemNameSize++);
+  itemName[itemNameSize] = '\0';
+  itemNameSize++;
+  itemSave = malloc((itemNameSize) * sizeof(char));
+  strcpy(itemSave, itemName);
+  room.loot = NULL;
+  //enemy
+  printf("Inimigo(nome do inimigo):");
+  fgets(enemyName, 50, stdin);
+  for (enemyNameSize = 0; enemyName[enemyNameSize] != '\n'; enemyNameSize++);
+  enemyName[enemyNameSize] = '\0';
+  enemyNameSize++;
+  enemySave = malloc((enemyNameSize) * sizeof(char));
+  strcpy(enemySave, enemyName);
+  room.enemy = NULL;
+  //ally
+  printf("Aliado(nome do aliado):");
+  fgets(allyName, 50, stdin);
+  for (allyNameSize = 0; allyName[allyNameSize] != '\n'; allyNameSize++);
+  allyName[allyNameSize] = '\0';
+  allyNameSize++;
+  allySave = malloc((allyNameSize) * sizeof(char));
+  strcpy(allySave, allyName);
+  room.ally = NULL;
+
+  FILE *roomFile = fopen("brms.dat", "ab+");
+  fwrite(&quantCop, sizeof(int), 1, roomFile);
+  fwrite(&textSize, sizeof(int), 1, roomFile);
+  fwrite(room.text, sizeof(char), textSize, roomFile);
+  fwrite(&itemNameSize, sizeof(int), 1, roomFile);
+  fwrite(itemSave, sizeof(char), itemNameSize, roomFile);
+  fwrite(&enemyNameSize, sizeof(int), 1, roomFile);
+  fwrite(enemySave, sizeof(char), enemyNameSize, roomFile);
+  fwrite(&allyNameSize, sizeof(int), 1, roomFile);
+  fwrite(allySave, sizeof(char), allyNameSize, roomFile);
+  fwrite(&room, sizeof(Room), 1, roomFile);
+  free(itemSave);
+  free(enemySave);
+  free(allySave);
+  fclose(roomFile);
+}
+
 int main(){
     //writeItem();
     //writeMove();
     //writeActor();
     writeRoom();
+    //writeBossRoom();
     return 0;
 }

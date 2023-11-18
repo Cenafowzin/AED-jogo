@@ -5,6 +5,9 @@
         "stdlib.h": "c",
         "screen.h": "c",
         "lib.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "stdio.h": "c",
+        "unistd.h": "c",
+        "bib.h": "c"
     }
 }

@@ -3,13 +3,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 void setUtf8Encoding(){
-#ifdef _WIN32
-    system("chcp 65001"); // Configura o código de página para UTF-8 no Windows
-#else
-    printf("\e[1;1H\e[2J"); // Limpa a tela no Linux
-#endif
+    #ifdef _WIN32
+        system("chcp 65001"); // Configura o código de página para UTF-8 no Windows
+    #else
+        printf("\e[1;1H\e[2J"); // Limpa a tela no Linux
+    #endif
+}
+
+//Sleep em millisegundos
+void milliSleep(unsigned long milliseconds){
+    clock_t start = clock();
+    unsigned long wait = milliseconds * (CLOCKS_PER_SEC / 1000);
+
+    while ((clock() - start) < wait);
 }
 
 //Cena de apresentação do ranking caso jogador chegue no fim
@@ -47,10 +56,10 @@ char textoPreRanking(char jogador, int ranking){
             printf("%c", vetor[i][j]);
             fflush(stdout); // Certifica-se de que a saída é exibida imediatamente
             if (i == 7){
-                usleep(250000);
+                milliSleep(350);
                 sleep(1);
             }else{
-                usleep(10000);
+                milliSleep(20);
             }
         }
         if (i == 2 || i == 4){
@@ -60,7 +69,7 @@ char textoPreRanking(char jogador, int ranking){
             // system(CLEAR_SCREEN);
         }
         printf("\n"); // Pula uma linha após imprimir toda a string
-        usleep(100000);
+        milliSleep(200);
     }
 
     // imprime o ranking
@@ -84,10 +93,10 @@ char textoPreRanking(char jogador, int ranking){
         // Imprime o caractere atual
         printf("%c", vetor[8][j]);
         fflush(stdout);
-        usleep(10000);
+        milliSleep(20);
     }
     printf("\n\n");
-    usleep(100000);
+    milliSleep(200);
     // imprimir o ranking completo
 }
 
@@ -120,7 +129,7 @@ void introducao(char **jogador){
     // pausa
     strcpy(vetor[8], "Aqueles que não atingirem tal honra serão exilados para o humilde reino de Nassau,\nvizinho a Aedônia, mas notavelmente mais carente.");
     // pausa e limpa a tela
-    strcpy(vetor[9], "O desafio está lançado: será que você, como jogador, terá a coragem\ne a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha\nNatacha a preservar a magia de seu reino?\n");
+    strcpy(vetor[9], "O desafio está lançado: será que você, guerreiro, terá a coragem\ne a estratégia necessárias para se destacar nesta jornada e ajudar a Rainha\nNatacha a preservar a magia de seu reino?\n");
     // pausa
     strcpy(vetor[10], "Como se chama?\n");
     // Loop para iterar sobre cada string no vetor
@@ -136,7 +145,7 @@ void introducao(char **jogador){
             // Imprime o caractere atual
             printf("%c", vetor[i][j]);
             fflush(stdout); // Certifica-se de que a saída é exibida imediatamente
-            usleep(10000);
+            milliSleep(20);
         }
         if (i == 3 || i == 5 || i == 6 || i == 8){
             // recebe input vazio e limpa a tela
@@ -148,7 +157,7 @@ void introducao(char **jogador){
             system(CLEAR_SCREEN);
         }
 
-        usleep(200000);
+        milliSleep(300);
     }
     *jogador = (char *)malloc(256 * sizeof(char));
     scanf("%s", *jogador);
@@ -171,7 +180,7 @@ void introducao(char **jogador){
             // Imprime o caractere atual
             printf("%c", vetor[i][j]);
             fflush(stdout); // Certifica-se de que a saída é exibida imediatamente
-            usleep(10000);
+            milliSleep(20);
         }
         if (i == 12){
             // recebe input vazio e limpa a tela
@@ -181,7 +190,7 @@ void introducao(char **jogador){
             system(CLEAR_SCREEN);
         }
 
-        usleep(100000);
+        milliSleep(200);
     }
 }
 
@@ -217,6 +226,8 @@ void disclaimer(void){
     sleep(1);
     fflush(stdout);
 }
+
+//-------------------------------------------------Memória--------------------------------------------------
 
 //Carrega um item determinado na memória
 Item *loadItem(const char *name){
@@ -388,7 +399,7 @@ void circRoomInsert(Room *room, Room **circHead, Room **circTail){
 }
 
 //Carrega todas as salas em uma lista circular
-void circLoadRooms(Room **circHead, Room **circTail){
+int circLoadRooms(Room **circHead, Room **circTail){
     FILE *roomFile = fopen("../data/rms.dat", "rb");
     if(!roomFile){
         fprintf(stderr, "Error opening roomFile.\n");
@@ -436,6 +447,7 @@ void circLoadRooms(Room **circHead, Room **circTail){
         free(allyName);
     }
     fclose(roomFile);
+    return idCount;
 }
 
 //Insere uma sala na AVL de salas
@@ -443,9 +455,9 @@ void avlRoomInsert(Room *room, Room **rootRoom){
     if (*rootRoom == NULL){
         *rootRoom = room;
     }else if (room->id < (*rootRoom)->id){
-        avlRoomInsert(room, &(*rootRoom)->left);
+        avlRoomInsert(room, &((*rootRoom)->left));
     }else if(room->id > (*rootRoom)->id){
-        avlRoomInsert(room, &(*rootRoom)->right);
+        avlRoomInsert(room, &((*rootRoom)->right));
     }
 
     balance(rootRoom);
@@ -515,7 +527,118 @@ void balance(Room **rootRoom){
     }
 }
 
-//Cria a árvore para o mapa do jogo
+//Cria uma árvore de ordem aleatória para o mapa do jogo
 void createMapAVL(Room **rootRoom, Room **circHead, Room **circTail, int totalRooms){
+    if(!*circHead || !*circTail || totalRooms <= 0){
+        fprintf(stderr, "Missing initial data to create map.");
+        exit(1);
+    }
+    time_t t;
+    srand((unsigned) time(&t));
 
+    int randomPos;
+    Room *circSelect = *circHead;
+    Room *selectedRoom = NULL;
+
+    while(*circHead){
+        
+        //Escolhe aleatóriamente uma sala da lista circular
+        if(*circHead == *circTail){
+            selectedRoom = *circHead;
+            *circHead = NULL;
+            *circTail = NULL;
+
+        }else{
+            randomPos = (rand() % totalRooms);
+
+            for(int i = 0; i < randomPos; i++){
+                circSelect = circSelect->right;
+            }
+
+            selectedRoom = circSelect;
+            circSelect = circSelect->right;
+            selectedRoom->left->right = selectedRoom->right;
+            selectedRoom->right->left = selectedRoom->left;
+            if(selectedRoom == *circHead){
+                *circHead = selectedRoom->right;
+            }else if(selectedRoom == *circTail){
+                *circTail = selectedRoom->left;
+            }
+        }
+        selectedRoom->right = NULL;
+        selectedRoom->left = NULL;
+        //Insere na árvore
+        avlRoomInsert(selectedRoom, rootRoom);
+    }
+}
+
+//-------------------------------------------------Jogo--------------------------------------------------
+
+int rollD20(){
+    time_t t;
+    srand((unsigned) time(&t));
+
+    return (rand() % 20) + 1;
+}
+
+void grabItem(Player *player,Room *room){
+    int choice;
+    if(room->loot->uses == WEAPON){
+
+    }else if(room->loot->uses == ARMOR){
+
+    }else{
+        int inventorySlot = 0;
+        for(inventorySlot; inventorySlot < 5 || player->inventory[inventorySlot] == NULL; inventorySlot++);
+        if(player->inventory[inventorySlot] == NULL){
+            printf("Você deseja adicionar %s ao seu inventário?\n[1=sim]\n[2 = nao]\n", room->loot->name);
+            scanf("%d", choice);
+            if(choice == 1){
+                player->inventory[inventorySlot] = room->loot;
+            }
+        }else{
+            printf("Sua mochila parece cheia!\n");
+            printf("Você deseja trocar %s por algum item do seu inventário?\n[1=sim]\n[2 = nao]\n", room->loot->name);
+            for(int i = 0; i < 6; i++){
+                printf("%d - %s", i+1, player->inventory[i]->name);
+                if(i%2 != 0){
+                    printf("\n");
+                }else{
+                    printf(" | ");
+                }
+            }
+            scanf("%d", choice);
+            if(choice == 1){
+                printf("Por qual item?\n");
+                for(int i = 0; i < 6; i++){
+                    printf("%d - %s", i+1, player->inventory[i]->name);
+                    if(i%2 != 0){
+                        printf("\n");
+                    }else{
+                        printf(" | ");
+                    }
+                }
+                printf("0 = cancelar\n");
+                scanf("%d", choice);
+                if(choice > 0 && choice < 7){
+                    choice--;
+                    player->inventory[choice] = room->loot;
+                }
+            }
+        }
+
+    }
+}
+
+void gamePlayLoop(Player *player, Room *currentRoom){
+    char starText = "Ao seguir o caminho inicial para dentro das florestas da Ceasar's Arena,\n"
+    "após um tempo caminhando na mata fechada, você se depara com a primeira clareira.\n"
+    "Um pouco afastado das árvores você vê algo parecido com uma mesa feita com tocos de árvores\n"
+    "e em cima dela algo parece refletir a luz do sol.";
+
+
+
+    for(int level = 0; level < 3; level++){
+        
+    }
 }

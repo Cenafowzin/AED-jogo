@@ -7,6 +7,9 @@
 #define CLEAR_SCREEN "clear"
 #endif
 
+#define ARMOR -1
+#define WEAPON -2
+
 typedef struct Item {
   char *name;
   char *text;
@@ -60,20 +63,27 @@ typedef struct Player {
   Actor *companion;
 } Player;
 
+void milliSleep(unsigned long milliseconds);
 void setUtf8Encoding();
 char textoPreRanking (char jogador, int ranking);
 void introducao (char **jogador);
 void disclaimer(void);
-void avlRoomInsert (Room *room, Room **root);
-void rotateRight (Room **root);
-void rotateLeft (Room **root);
-void balanceTree (Room **root);
+
+//avl
+void avlRoomInsert(Room *room, Room **rootRoom);
+void rotateRight(Room **rootRoom);
+void rotateLeft(Room **rootRoom);
+int childHeight(Room *rootRoom);
+void balance(Room **rootRoom);
 
 //carregar na memória
 Item *loadItem(const char *name);
 Move *loadMove(const char *name);
 Actor *loadActor(const char *name);
 void circRoomInsert (Room *room, Room **head, Room **tail);
-void circLoadRooms(Room **circHead, Room **circTail);
+int circLoadRooms(Room **circHead, Room **circTail);
+void createMapAVL(Room **rootRoom, Room **circHead, Room **circTail, int totalRooms);
+
+int rollD20();
 
 #endif
