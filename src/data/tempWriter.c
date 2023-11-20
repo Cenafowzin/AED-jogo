@@ -3,6 +3,14 @@
 #include <string.h>
 #include "../data_structure/bib.h"
 
+void setUtf8Encoding(){
+    #ifdef _WIN32
+        system("chcp 65001"); // Configura o código de página para UTF-8 no Windows
+    #else
+        printf("\e[1;1H\e[2J"); // Limpa a tela no Linux
+    #endif
+}
+
 void writeMove() {
   Move move;
   char name[50];
@@ -302,10 +310,10 @@ void writeBossRoom(){
 }
 
 int main(){
-    //writeItem();
-    //writeMove();
-    //writeActor();
-    writeRoom();
-    //writeBossRoom();
-    return 0;
+  writeItem();
+  //writeMove();
+  //writeActor();
+  //writeRoom();
+  //writeBossRoom();
+  return 0;
 }

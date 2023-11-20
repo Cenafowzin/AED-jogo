@@ -10,6 +10,13 @@
 #define ARMOR -1
 #define WEAPON -2
 
+typedef struct Rank{
+  char name[21];
+  int points;
+  struct Rank *next;
+  struct Rank *prev;
+}Rank;
+
 typedef struct Item {
   char *name;
   char *text;
@@ -54,6 +61,7 @@ typedef struct Room {
 
 typedef struct Player {
   char name[21];
+  int points;
   int health;
   int money;
   int armorClass;
@@ -63,6 +71,9 @@ typedef struct Player {
   Actor *companion;
 } Player;
 
+//introdução e preparação
+
+void charPrint(char *texto);
 void milliSleep(unsigned long milliseconds);
 void setUtf8Encoding();
 char textoPreRanking (char jogador, int ranking);
@@ -70,6 +81,7 @@ void introducao (char **jogador);
 void disclaimer(void);
 
 //avl
+
 void avlRoomInsert(Room *room, Room **rootRoom);
 void rotateRight(Room **rootRoom);
 void rotateLeft(Room **rootRoom);
@@ -77,13 +89,30 @@ int childHeight(Room *rootRoom);
 void balance(Room **rootRoom);
 
 //carregar na memória
+
 Item *loadItem(const char *name);
 Move *loadMove(const char *name);
 Actor *loadActor(const char *name);
 void circRoomInsert (Room *room, Room **head, Room **tail);
 int circLoadRooms(Room **circHead, Room **circTail);
 void createMapAVL(Room **rootRoom, Room **circHead, Room **circTail, int totalRooms);
+int loadRank(Rank **rankHead, Rank **rankTail);
+void saveRank(Rank **rankHead, Rank **rankTail);
 
+//jogo
+
+void startPlayer(Player *player);
 int rollD20();
+void showInventory(Player *player);
+void grabMoney(Player *player, int money);
+void grabItem(Player *player,Item *item);
+void gamePlayLoop(Player *player, Room *rootRoom);
+void roomOptions(Player *player, Room *room);
+void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank);
+void sortRank();
+
+//liberar memória
+
+void freeItem(Item *item);
 
 #endif

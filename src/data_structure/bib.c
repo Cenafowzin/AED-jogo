@@ -100,6 +100,16 @@ char textoPreRanking(char jogador, int ranking){
     // imprimir o ranking completo
 }
 
+//Printa caracter por caracter
+void charPrint(char *texto){
+    for (int i = 0; texto[i] != '\0'; ++i){
+        // Imprime o caractere atual
+        printf("%c", texto[i]);
+        fflush(stdout); // Certifica-se de que a saída é exibida imediatamente
+        milliSleep(20);
+    }
+}
+
 //Cena de introdução
 void introducao(char **jogador){
     setUtf8Encoding();
@@ -572,8 +582,78 @@ void createMapAVL(Room **rootRoom, Room **circHead, Room **circTail, int totalRo
     }
 }
 
+//Carrega o ranking na lista
+int loadRank(Rank **rankHead, Rank **rankTail){
+    FILE *rankFile = fopen("../data/rk.dat", "rb");
+    if(!rankFile){
+        return 0;
+    }
+
+    Rank rank;
+    while(fread(&rank, sizeof(Rank), 1, rankFile) == 1){
+        Rank *saveRank = (Rank*)malloc(sizeof(Rank));
+        *saveRank = rank;
+        insertRank(rankHead, rankTail, saveRank);
+    }
+    fclose(rankFile);
+    return 1;
+}
+
+//Salva novo ranking no arquivo
+void saveRank(Rank **rankHead, Rank **rankTail){
+    if(!*rankHead || !*rankTail){
+        return;
+    }
+
+    FILE *rankFile = fopen("../data/rk.dat", "wb+");
+    if(!rankFile){
+        fprintf(stderr, "Error creating rankFile.");
+        exit(1);
+    }
+
+    int limit = 0;
+    Rank *temp;
+    while(*rankHead && limit <20){
+        fwrite(*rankHead, sizeof(Rank), 1, rankFile);
+        temp = *rankHead;
+        *rankHead = (*rankHead)->next;
+        free(temp);
+        limit++;
+    }
+
+    while(*rankHead){
+        temp = *rankHead;
+        *rankHead = (*rankHead)->next;
+        free(temp);
+    }
+
+    fclose(rankFile);
+}
+
 //-------------------------------------------------Jogo--------------------------------------------------
 
+//Inicia a struct do jogador
+void startPlayer(Player *player){
+    player->health = 100;
+    player->money = 0;
+    player->points = 0;
+    player->armorClass = 10;
+    player->armor = loadItem("");
+    player->weapon = loadItem("");
+    for(int i = 0; i<6; i++){
+        player->inventory[i] = loadItem("");
+    }
+    player->companion = loadActor("");
+}
+
+//Libera a memória de um item
+void freeItem(Item *item){
+    free(item->name);
+    free(item->text);
+    free(item);
+}
+
+//Rolagem de dado para combate
 int rollD20(){
     time_t t;
     srand((unsigned) time(&t));
@@ -581,64 +661,335 @@ int rollD20(){
     return (rand() % 20) + 1;
 }
 
-void grabItem(Player *player,Room *room){
+//Mostra os itens no inventário do jogador
+void showInventory(Player *player){
+    printf("\n\t\t     Inventário\n");
+    for(int i = 0; i < 6; i++){
+        if(player->inventory[i]){
+            printf("%d - %-21s", i+1, player->inventory[i]->name);
+        }else{
+            printf("%d - nada                 ", i+1);
+        }
+        if(i%2 != 0){
+            printf("\n");
+        }else{
+            printf(" | ");
+        }
+    }
+}
+
+//Trata ação de pegar um item
+void grabItem(Player *player,Item *item){
+    printf("%s\n", item->text);
     int choice;
-    if(room->loot->uses == WEAPON){
-
-    }else if(room->loot->uses == ARMOR){
-
-    }else{
-        int inventorySlot = 0;
-        for(inventorySlot; inventorySlot < 5 || player->inventory[inventorySlot] == NULL; inventorySlot++);
-        if(player->inventory[inventorySlot] == NULL){
-            printf("Você deseja adicionar %s ao seu inventário?\n[1=sim]\n[2 = nao]\n", room->loot->name);
-            scanf("%d", choice);
-            if(choice == 1){
-                player->inventory[inventorySlot] = room->loot;
+    if(item->uses == WEAPON || item->uses == ARMOR){ //Para armas ou armaduras
+        if(((item->uses == WEAPON) ? player->weapon: player->armor)){
+            while(1){
+                printf("Você deseja trocar %s por %s?\n[1=sim][2=não]\n", ((item->uses == WEAPON) ? player->weapon->name: player->armor->name), item->name);
+                scanf("%d", &choice);
+                if(choice == 1){
+                    if(item->uses == WEAPON){
+                        printf("Você trocou %s por %s!\n", player->weapon->name,item->name);
+                        freeItem(player->weapon);
+                        player->weapon = item;
+                    }else{
+                        printf("Você trocou %s por %s!\n", player->armor->name,item->name);
+                        freeItem(player->armor);
+                        player->armor = item;
+                    }
+                    sleep(2);
+                    system(CLEAR_SCREEN);
+                    return;
+                }else if(choice == 2){
+                    system(CLEAR_SCREEN);
+                    return;
+                }
+                system(CLEAR_SCREEN);
             }
         }else{
-            printf("Sua mochila parece cheia!\n");
-            printf("Você deseja trocar %s por algum item do seu inventário?\n[1=sim]\n[2 = nao]\n", room->loot->name);
-            for(int i = 0; i < 6; i++){
-                printf("%d - %s", i+1, player->inventory[i]->name);
-                if(i%2 != 0){
-                    printf("\n");
-                }else{
-                    printf(" | ");
-                }
-            }
-            scanf("%d", choice);
-            if(choice == 1){
-                printf("Por qual item?\n");
-                for(int i = 0; i < 6; i++){
-                    printf("%d - %s", i+1, player->inventory[i]->name);
-                    if(i%2 != 0){
-                        printf("\n");
+            while(1){
+                printf("Você deseja equipar %s?\n[1=sim][2=não]\n", item->name);
+                scanf("%d", &choice);
+                if(choice == 1){
+                    if(item->uses == WEAPON){
+                        printf("Você equipou %s!\n", item->name);
+                        player->weapon = item;
                     }else{
-                        printf(" | ");
+                        printf("Você equipou %s!\n", item->name);
+                        player->armor = item;
                     }
+                    sleep(2);
+                    system(CLEAR_SCREEN);
+                    return;
+                }else if(choice == 2){
+                    system(CLEAR_SCREEN);
+                    return;
                 }
-                printf("0 = cancelar\n");
-                scanf("%d", choice);
-                if(choice > 0 && choice < 7){
-                    //free no item
-                    player->inventory[choice-1] = room->loot;
-                }
+                system(CLEAR_SCREEN);
             }
         }
 
+    }else{ //Para iten usáveis
+        int inventorySlot = 0;
+        for(inventorySlot; inventorySlot < 5 && player->inventory[inventorySlot] != NULL; inventorySlot++);
+        printf("((%d))\n", inventorySlot);
+        if(player->inventory[inventorySlot] == NULL){
+            while(1){
+                printf("Você deseja adicionar %s ao seu inventário?\n[1=sim][2 = nao]\n", item->name);
+                scanf("%d", &choice);
+                if(choice == 1){
+                    printf("%s foi adicionado no seu inventário!\n", item->name);
+                    player->inventory[inventorySlot] = item;
+                    sleep(2);
+                    system(CLEAR_SCREEN);
+                    return;
+                }else if(choice == 2){
+                    system(CLEAR_SCREEN);
+                    return;
+                }
+                system(CLEAR_SCREEN);
+            }
+        }else{
+            while(1){
+                printf("Sua mochila parece cheia!\n");
+                printf("Você deseja trocar %s por algum item do seu inventário?\n", item->name);
+                showInventory(player);
+                printf("\n[1=sim][2 = nao]\n");
+                scanf("%d", &choice);
+                if(choice == 1){
+                    while(1){
+                        system(CLEAR_SCREEN);
+                        printf("Por qual item?\n");
+                        showInventory(player);
+                        printf("\n[0=cancelar]\n");
+                        scanf("%d", &choice);
+                        if(choice > 0 && choice < 7){
+                            printf("%s foi trocado por %s!\n", player->inventory[choice-1]->name, item->name);
+                            freeItem(player->inventory[choice-1]);
+                            player->inventory[choice-1] = item;
+                            sleep(2);
+                            system(CLEAR_SCREEN);
+                            return;
+                        }else if(choice == 0){
+                            system(CLEAR_SCREEN);
+                            return;
+                        }
+                    }
+                }else if(choice == 2){
+                    system(CLEAR_SCREEN);
+                    return;
+                }
+                system(CLEAR_SCREEN);
+            }
+        }
     }
 }
 
-void gamePlayLoop(Player *player, Room *currentRoom){
-    char starText = "Ao seguir o caminho inicial para dentro das florestas da Ceasar's Arena,\n"
-    "após um tempo caminhando na mata fechada, você se depara com a primeira clareira.\n"
-    "Um pouco afastado das árvores você vê algo parecido com uma mesa feita com tocos de árvores\n"
-    "e em cima dela algo parece refletir a luz do sol.";
+//Trata o ganho de dinheiro
+void grabMoney(Player *player, int money){
+    printf("Voçê ganhou %d Gitcoins!\n", money);
+    player->money += money;
+    player->points += money;
+    sleep(2);
+}
 
+//Loop principal de gameplay
+void gamePlayLoop(Player *player, Room *rootRoom){
+    int choice;
+    Room *currentRoom = rootRoom, *level2 = NULL, *level3 = NULL;
+    char *starText = "Ao seguir o caminho inicial para dentro das florestas da Ceasar's Arena,\n"
+    "após um tempo caminhando na mata fechada, você se encontra uma clareira.\n"
+    "Um pouco afastado das árvores você vê a luz do sol sendo refletida de algum objeto\n"
+    "fincado em um toco de árvore. Ao se aproximar você se depara com uma espada estranha,\n"
+    "sua lâmina é composta por vários segmentos que parecem estar conectados por um fio brilhante \n"
+    "que atravessa do cabo até a ponta.\n"
+    "\nNão parece a melhor das armas, mas é melhor do que nada.\n";
+    
+    //Sala inicial
+    charPrint(starText);
 
+    Item *startWeapon = loadItem("espada simplesmente encadeada");
 
+    grabItem(player, startWeapon);
+
+    //Loop de níveis
     for(int level = 0; level < 3; level++){
-        
+        system(CLEAR_SCREEN);
+        char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
+        "Qual lado faria você chegar mais próximo de seu sonho?\n"
+        "Qual lado lado seria a melhor escolha?\n"
+        "Você não sabe, porém confia em seus instintos e segue...\n\n"
+        "[1 - O caminho da esquerda]\n"
+        "[2 - O caminho da direita]\n";
+        charPrint(choicePathText);
+        while(1){
+            scanf("%d", &choice);
+            if(choice == 1){
+                if(currentRoom == rootRoom){ //marca inicio do level 2
+                    level2 = currentRoom->right;
+                }else if(currentRoom == level2){//marca inicio do level 3
+                    level3 == currentRoom->right;
+                }
+                currentRoom = currentRoom->left;
+                break;
+            }else if(choice == 2){
+                if(currentRoom == rootRoom){//marca inicio do level 2
+                    level2 = currentRoom->left;
+                }else if(currentRoom == level2){//marca inicio do level 3
+                    level3 == currentRoom->left;
+                }
+                currentRoom = currentRoom->right;
+                break;
+            }else{
+                system(CLEAR_SCREEN);
+                printf("Escolha um caminho!\n\n[1 - O caminho da esquerda]\n[2 - O caminho da direita]\n");
+            }
+        }
+
+        while(currentRoom->left && currentRoom->right){
+
+        }
     }
 }
+
+// char *text; X
+// int damage; X
+// int money; X
+// Item *loot; X
+// Actor *enemy; - combate
+// Actor *ally; X
+
+//Realiza os eventos de cada sala
+void roomOptions(Player *player, Room *room){
+    int choice;
+    //introdução da sala
+    charPrint(room->text);
+
+    if(room->damage != 0){//sala de armadilha
+        int roll = rollD20();
+        if((roll + player->armor->defenseMod) > 15){
+            printf("Seus reflexos afiados e armadura resistente o fizeram sofrer menos dano!\n");
+            printf("Você toma %d de dano.", (room->damage/2));
+            player->health -= (room->damage/2);
+            player->points += room->damage/4;
+        }else{
+            printf("Você toma %d de dano!", room->damage);
+            player->health -= room->damage;
+        }
+    }else if(room->money != 0){//sala com dinheiro
+        grabMoney(player, room->money);
+
+    }else if(room->loot){//sala com loot
+        grabItem(player, room->loot);
+
+    }else if(room->ally){//sala de conversa
+        //introdução do aliado
+        charPrint(room->ally->text);
+        while(1){
+            scanf("%d", &choice);
+            if(choice == 1){
+                if(room->ally->moneyDrop){
+                    grabMoney(player, room->money);
+                    return;
+
+                }else if(room->ally->itemDrop){
+                    player->points += ((room->ally->itemDrop->attackMod*5) + (room->ally->itemDrop->defenseMod*5));
+                    grabItem(player, room->ally->itemDrop);
+                    return;
+                }
+            }else if(choice == 2){
+                system(CLEAR_SCREEN);
+                return;
+            }
+        }
+
+    }else if(room->enemy){//sala de combate
+        //introdução do inimigo
+        charPrint(room->enemy->text);
+
+        //combate
+    }
+}
+
+//-------------------------------------------------Rank--------------------------------------------------
+
+//Insere novo ranking
+void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank){
+    rank->next = NULL;
+    rank->prev = NULL;
+    
+    if(!*rankHead){
+        *rankHead = rank;
+        *rankTail = rank;
+    }else{
+        (*rankTail)->next = rank;
+        rank->prev = *rankTail;
+        *rankTail = rank;
+    }
+}
+
+//Organiza o ranking por insertionSort
+void sortRank(Rank **rankHead, Rank **rankTail){
+    if (*rankHead == NULL || (*rankHead)->next == NULL) {
+        return;
+    }
+
+    Rank *current = (*rankHead)->next;
+    Rank *compare = NULL;
+    while(current){
+        compare = current;
+        while(compare->prev && compare->points < compare->prev->points){
+            Rank *aux = compare->prev;
+            aux->prev->next = compare;
+            aux->prev = compare;
+            aux->next = compare->next;
+            compare->prev = aux->prev;
+            compare->next->prev = aux;
+            compare->next = aux;
+
+            if(aux->next == NULL){
+                *rankTail = aux;
+            }else if(compare->next == NULL){
+                *rankTail = compare;
+            }else if(aux->prev == NULL){
+                *rankHead = aux;
+            }else if(compare->prev == NULL){
+                *rankHead = compare;
+            }
+            compare = compare->prev;
+        }
+
+        current = current->next;
+    }
+    
+}
+
+//Mostra o ranking
+void showRank(Rank *rankHead){
+    int choice;
+    Rank *current = rankHead;
+    while(1){
+        system(CLEAR_SCREEN);
+        int i=0;
+        charPrint("------------Ranking------------\n");
+        while (current){
+            if(i == 20){
+                charPrint("\nExilado para o Reino de Nassau\n");
+            }
+            printf("%.2d > ", i+1);
+            charPrint(current->name);
+            printf(" - %d\n", current->points);
+            current = current->next;
+            i++;
+        }
+        charPrint("-------------------------------\n");
+        printf("[1-voltar]\n");
+        scanf("%d", &choice);
+        if(choice == 1){
+            return;
+        }else{
+            current = rankHead;
+        }
+    }
+}
+
