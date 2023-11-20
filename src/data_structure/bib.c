@@ -918,7 +918,7 @@ void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank){
     rank->next = NULL;
     rank->prev = NULL;
     
-    if(!*rankHead){
+    if(!(*rankHead)){
         *rankHead = rank;
         *rankTail = rank;
     }else{
@@ -929,7 +929,74 @@ void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank){
 }
 
 //Organiza o ranking por insertionSort
-void sortRank(Rank **rankHead, Rank **rankTail){
+void sortRank (Rank **rankHead, Rank **rankTail){
+    if (*rankHead == NULL || (*rankHead)->next == NULL) {
+        return;
+    }
+
+    Rank *sorted, *unsorted, *temp;
+    sorted= *rankHead;
+    unsorted = (*rankHead)->next;
+    while(unsorted){
+        temp = unsorted;
+        unsorted = unsorted->next;
+        while((temp->prev!=NULL) && (temp->points > temp->prev->points)){
+            temp->prev->next = temp->next;
+            if(temp->next){
+                temp->next->prev = temp->prev;
+            }else{
+                *rankTail = temp->prev;
+            }
+            temp->next = temp->prev;
+            temp->prev = temp->prev->prev;
+            temp->next->prev = temp;
+            if(temp->prev){
+                temp->prev->next = temp;
+            }else{
+                *rankHead = temp;
+            }
+        }
+    }
+}
+
+
+
+/* 
+
+    while(current!=*rankTail){
+        Rank *compare = current;
+        while((compare->prev!=NULL) && (compare->points < compare->prev->points)){
+            //Rank *aux = compare->prev;
+            //compare->prev = compare;
+            //compare=aux;
+            //compare=compare->prev;
+            //insertion sorte em duplamente encadeada
+            Rank *aux = compare->prev;
+            if (aux->prev!=NULL){
+                aux->prev->next = compare;
+            }else{
+                *rankHead = compare;
+            }
+            aux->prev = compare;
+            aux->next = compare->next;
+            compare->prev = aux->prev;
+            if (compare->next!=NULL){
+                compare->next->prev = aux;
+            }else{
+                *rankTail = aux;
+            }
+            compare->next = aux;
+
+            compare = compare->prev;
+        }
+        current = current->next;
+    } */
+    
+
+
+
+
+/* void sortRank(Rank **rankHead, Rank **rankTail){
     if (*rankHead == NULL || (*rankHead)->next == NULL) {
         return;
     }
@@ -947,13 +1014,13 @@ void sortRank(Rank **rankHead, Rank **rankTail){
             compare->next->prev = aux;
             compare->next = aux;
 
-            if(aux->next == NULL){
-                *rankTail = aux;
-            }else if(compare->next == NULL){
-                *rankTail = compare;
-            }else if(aux->prev == NULL){
-                *rankHead = aux;
-            }else if(compare->prev == NULL){
+            //compare->next->prev = aux;
+            if (aux->next) {
+                aux->next->prev = aux;
+            }
+            if (compare->prev) {
+                compare->prev->next = compare;
+            } else {
                 *rankHead = compare;
             }
             compare = compare->prev;
@@ -962,7 +1029,7 @@ void sortRank(Rank **rankHead, Rank **rankTail){
         current = current->next;
     }
     
-}
+} */
 
 //Mostra o ranking
 void showRank(Rank *rankHead){
