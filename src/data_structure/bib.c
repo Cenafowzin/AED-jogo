@@ -928,41 +928,7 @@ void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank){
     }
 }
 
-//Organiza o ranking por insertionSort
-void sortRank(Rank **rankHead, Rank **rankTail){
-    if (*rankHead == NULL || (*rankHead)->next == NULL) {
-        return;
-    }
 
-    Rank *current = (*rankHead)->next;
-    Rank *compare = NULL;
-    while(current){
-        compare = current;
-        while(compare->prev && compare->points < compare->prev->points){
-            Rank *aux = compare->prev;
-            aux->prev->next = compare;
-            aux->prev = compare;
-            aux->next = compare->next;
-            compare->prev = aux->prev;
-            compare->next->prev = aux;
-            compare->next = aux;
-
-            if(aux->next == NULL){
-                *rankTail = aux;
-            }else if(compare->next == NULL){
-                *rankTail = compare;
-            }else if(aux->prev == NULL){
-                *rankHead = aux;
-            }else if(compare->prev == NULL){
-                *rankHead = compare;
-            }
-            compare = compare->prev;
-        }
-
-        current = current->next;
-    }
-    
-}
 
 //Mostra o ranking
 void showRank(Rank *rankHead){
