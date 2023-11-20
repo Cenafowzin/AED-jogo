@@ -20,7 +20,6 @@ int main() {
     Rank *head = NULL, *tail = NULL, *n = NULL;
 
     loadRank(&head, &tail);
-
     Rank um = {"um", 10};
     Rank dois = {"dois", 20};
     Rank tres = {"tres", 30};
@@ -28,6 +27,10 @@ int main() {
     Rank cinco = {"cinco", 50};
 
 
+    insertRank(&head, &tail, &cinco);
+    insertRank(&head, &tail, &quatro);
+    insertRank(&head, &tail, &tres);
+    insertRank(&head, &tail, &dois);
     insertRank(&head, &tail, &um);
     insertRank(&head, &tail, &dois);
     insertRank(&head, &tail, &tres);

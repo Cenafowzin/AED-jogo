@@ -918,7 +918,7 @@ void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank){
     rank->next = NULL;
     rank->prev = NULL;
     
-    if(!*rankHead){
+    if(!(*rankHead)){
         *rankHead = rank;
         *rankTail = rank;
     }else{
@@ -928,7 +928,36 @@ void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank){
     }
 }
 
+//Organiza o ranking por insertionSort
+void sortRank (Rank **rankHead, Rank **rankTail){
+    if (*rankHead == NULL || (*rankHead)->next == NULL) {
+        return;
+    }
 
+    Rank *sorted, *unsorted, *temp;
+    sorted= *rankHead;
+    unsorted = (*rankHead)->next;
+    while(unsorted){
+        temp = unsorted;
+        unsorted = unsorted->next;
+        while((temp->prev!=NULL) && (temp->points > temp->prev->points)){
+            temp->prev->next = temp->next;
+            if(temp->next){
+                temp->next->prev = temp->prev;
+            }else{
+                *rankTail = temp->prev;
+            }
+            temp->next = temp->prev;
+            temp->prev = temp->prev->prev;
+            temp->next->prev = temp;
+            if(temp->prev){
+                temp->prev->next = temp;
+            }else{
+                *rankHead = temp;
+            }
+        }
+    }
+}
 
 //Mostra o ranking
 void showRank(Rank *rankHead){

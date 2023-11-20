@@ -109,7 +109,7 @@ void grabItem(Player *player,Item *item);
 void gamePlayLoop(Player *player, Room *rootRoom);
 void roomOptions(Player *player, Room *room);
 void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank);
-
+void sortRank(Rank **rankHead, Rank **rankTail);
 
 //liberar memória
 
