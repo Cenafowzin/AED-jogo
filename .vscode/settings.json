@@ -8,6 +8,7 @@
         "string.h": "c",
         "stdio.h": "c",
         "unistd.h": "c",
-        "bib.h": "c"
+        "bib.h": "c",
+        "time.h": "c"
     }
 }

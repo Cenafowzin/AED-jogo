@@ -721,12 +721,13 @@ void showInventory(Player *player){
 
 //Trata ação de pegar um item
 void grabItem(Player *player,Item *item){
-    printf("%s\n", item->text);
+    charPrint(item->text);
+    printf("\n");
     int choice;
     if(item->uses == WEAPON || item->uses == ARMOR){ //Para armas ou armaduras
         if(((item->uses == WEAPON) ? player->weapon: player->armor)){
             while(1){
-                printf("Você deseja trocar %s por %s?\n[1=sim][2=não]\n", ((item->uses == WEAPON) ? player->weapon->name: player->armor->name), item->name);
+                printf("\nVocê deseja trocar %s por %s?\n[1=sim][2=não]\n", ((item->uses == WEAPON) ? player->weapon->name: player->armor->name), item->name);
                 scanf("%d", &choice);
                 if(choice == 1){
                     if(item->uses == WEAPON){
@@ -745,11 +746,10 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }else{
             while(1){
-                printf("Você deseja equipar %s?\n[1=sim][2=não]\n", item->name);
+                printf("\nVocê deseja equipar %s?\n[1=sim][2=não]\n", item->name);
                 scanf("%d", &choice);
                 if(choice == 1){
                     if(item->uses == WEAPON){
@@ -773,10 +773,9 @@ void grabItem(Player *player,Item *item){
     }else{ //Para iten usáveis
         int inventorySlot = 0;
         for(inventorySlot; inventorySlot < 5 && player->inventory[inventorySlot] != NULL; inventorySlot++);
-        printf("((%d))\n", inventorySlot);
         if(player->inventory[inventorySlot] == NULL){
             while(1){
-                printf("Você deseja adicionar %s ao seu inventário?\n[1=sim][2 = nao]\n", item->name);
+                printf("\nVocê deseja adicionar %s ao seu inventário?\n[1=sim][2 = nao]\n", item->name);
                 scanf("%d", &choice);
                 if(choice == 1){
                     printf("%s foi adicionado no seu inventário!\n", item->name);
@@ -792,8 +791,8 @@ void grabItem(Player *player,Item *item){
             }
         }else{
             while(1){
-                printf("Sua mochila parece cheia!\n");
-                printf("Você deseja trocar %s por algum item do seu inventário?\n", item->name);
+                printf("\nSua mochila parece cheia!\n");
+                printf("\nVocê deseja trocar %s por algum item do seu inventário?\n", item->name);
                 showInventory(player);
                 printf("\n[1=sim][2 = nao]\n");
                 scanf("%d", &choice);
@@ -913,7 +912,7 @@ void battle(Player *player, Actor *enemy){
             roll = rollD20();
 
             if(turn == ENEMY_TURN && enemyStun > 0){// perde a vez do inimigo se tiver stun
-                printf("Vez do adversário!\n");
+                printf("Vez de %s!\n", enemy->name);
                 printf("Seu adversário %s perdeu a vez!\n", enemy->name);
                 enemyStun--;
                 sleep(3);
@@ -925,7 +924,7 @@ void battle(Player *player, Actor *enemy){
                 sleep(3);
 
             }else if(turn == ENEMY_TURN && (!player->ally || target == 0)){// inimigo ataca o player
-                printf("Vez do adversário!\n");
+                printf("Vez de %s!\n", enemy->name);
                 if((roll + enemy->moves[moveNumber]->attackMod) > (player->armorClass + playerTempStatus.defenseMod)){
                     charPrint(enemy->moves[moveNumber]->text);// descreve ataque
                     printf("\n");
@@ -954,7 +953,7 @@ void battle(Player *player, Actor *enemy){
                     sleep(3);
                 }
             }else if(turn == ENEMY_TURN){ // inimigo ataca o aliado
-                printf("Vez do adversário!\n");
+                printf("Vez de %s!\n", enemy->name);
                 if((roll + enemy->moves[moveNumber]->attackMod) > (player->ally->armorClass + allyTempStatus.defenseMod)){
                     charPrint(enemy->moves[moveNumber]->text);// descreve ataque
                     printf("\n");
@@ -978,7 +977,7 @@ void battle(Player *player, Actor *enemy){
                     sleep(4);
                 }
             }else if (player->ally && turn == ALLY_TURN){// turno do aliado
-                printf("Vez do aliado!\n");
+                printf("Vez de %s!\n", player->ally->name);
                 if((roll + player->ally->moves[moveNumber]->attackMod) > (enemy->armorClass + enemyTempStatus.defenseMod)){
                     charPrint(player->ally->moves[moveNumber]->text);// descreve ataque
                     printf("\n");
@@ -1011,6 +1010,11 @@ void battle(Player *player, Actor *enemy){
             player->ally = NULL;
             sleep(3);
         }
+    }
+
+    if(player->health > 0){
+        player->points += enemy->moneyDrop;
+        player->money += enemy->moneyDrop;
     }
 }
 
@@ -1099,8 +1103,7 @@ void gamePlayLoop(Player *player, Room *rootRoom){
     "Um pouco afastado das árvores você vê a luz do sol sendo refletida de algum objeto\n"
     "fincado em um toco de árvore. Ao se aproximar você se depara com uma espada estranha,\n"
     "sua lâmina é composta por vários segmentos que parecem estar conectados por um fio brilhante \n"
-    "que atravessa do cabo até a ponta.\n"
-    "\nNão parece a melhor das armas, mas é melhor do que nada.\n";
+    "que atravessa do cabo até a ponta.\n\n";
     
     //Sala inicial
     charPrint(starText);
@@ -1109,49 +1112,81 @@ void gamePlayLoop(Player *player, Room *rootRoom){
 
     grabItem(player, startWeapon);
 
-    //Loop de níveis
-    for(int level = 0; level < 2; level++){
-        system(CLEAR_SCREEN);
-        char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
-        "Qual lado faria você chegar mais próximo de seu sonho?\n"
-        "Qual lado lado seria a melhor escolha?\n"
-        "Você não sabe, porém confia em seus instintos e segue...\n\n"
-        "[1 - O caminho da esquerda]\n"
-        "[2 - O caminho da direita]\n";
-        charPrint(choicePathText);
-        while(1){
-            scanf("%d", &choice);
-            if(choice == 1){
-                if(currentRoom == rootRoom){ //marca inicio do level 2
-                    level2 = currentRoom->right;
-                }
-                currentRoom = currentRoom->left;
-                break;
-            }else if(choice == 2){
-                if(currentRoom == rootRoom){//marca inicio do level 2
-                    level2 = currentRoom->left;
-                }
-                currentRoom = currentRoom->right;
-                break;
-            }else{
-                system(CLEAR_SCREEN);
-                printf("Escolha um caminho!\n\n[1 - O caminho da esquerda]\n[2 - O caminho da direita]\n");
-            }
-        }
+    Actor *firstEnemy = loadActor("arqueiro de ponteiros");
 
-        while(currentRoom->left && currentRoom->right){
-            roomOptions(player, currentRoom);
-            charPrint(choicePathText);
-            charPrint("[3 - Usar um item]\n");
-        }
-    }
+    charPrint(firstEnemy->text);
+    sleep(4);
+    battle(player, firstEnemy);
+
+    charPrint("Ao derrotar seu inimigo, você percebe seu arco no chão.\n\n");
+    player->points += rand()%200;
+    Item *arco = loadItem("arco estruturado");
+    grabItem(player, arco);
+
+    char * text2 = "Andando um pouco pela floresta você tem a sorte de encontrar um baú que parece fazer parte de uma grande árvore\n"
+    "dentro desse baú você encontra algumas coisas que podem ser úteis\n\n";
+    Item *pot = loadItem("ticket de feriado");
+    Item *machado = loadItem("machado circular duplamente encadeado");
+    Item *gpt = loadItem("cha de gpt");
+    Item *armadura = loadItem("roupa de pinguim");
+    charPrint(text2);
+    sleep(3);
+    grabItem(player, pot);
+    player->points += rand()%200;
+    grabItem(player, gpt);
+    player->points += rand()%200;
+    grabItem(player, machado);
+    player->points += rand()%200;
+    grabItem(player, armadura);
+    player->points += rand()%200;
+
+    charPrint("Andando pela floresta você acaba chegando em uma grande estrutura muito similar ao castelo da rainha\n");
+
+
+
+    //Loop de níveis
+    // for(int level = 0; level < 2; level++){
+    //     system(CLEAR_SCREEN);
+    //     char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
+    //     "Qual lado faria você chegar mais próximo de seu sonho?\n"
+    //     "Qual lado lado seria a melhor escolha?\n"
+    //     "Você não sabe, porém confia em seus instintos e segue...\n\n"
+    //     "[1 - O caminho da esquerda]\n"
+    //     "[2 - O caminho da direita]\n";
+    //     charPrint(choicePathText);
+    //     while(1){
+    //         scanf("%d", &choice);
+    //         if(choice == 1){
+    //             if(currentRoom == rootRoom){ //marca inicio do level 2
+    //                 level2 = currentRoom->right;
+    //             }
+    //             currentRoom = currentRoom->left;
+    //             break;
+    //         }else if(choice == 2){
+    //             if(currentRoom == rootRoom){//marca inicio do level 2
+    //                 level2 = currentRoom->left;
+    //             }
+    //             currentRoom = currentRoom->right;
+    //             break;
+    //         }else{
+    //             system(CLEAR_SCREEN);
+    //             printf("Escolha um caminho!\n\n[1 - O caminho da esquerda]\n[2 - O caminho da direita]\n");
+    //         }
+    //     }
+
+    //     while(currentRoom->left && currentRoom->right){
+    //         roomOptions(player, currentRoom);
+    //         charPrint(choicePathText);
+    //         charPrint("[3 - Usar um item]\n");
+    //     }
+    // }
 }
 
 // char *text; X
 // int damage; X
 // int money; X
 // Item *loot; X
-// Actor *enemy; - combate
+// Actor *enemy; X
 // Actor *ally; X
 
 //Realiza os eventos de cada sala
@@ -1276,7 +1311,7 @@ void showRank(Rank *rankHead){
             i++;
         }
         charPrint("-------------------------------\n");
-        printf("[1-voltar]\n");
+        printf("[1-sair]\n");
         scanf("%d", &choice);
         if(choice == 1){
             return;

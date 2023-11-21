@@ -10,97 +10,42 @@ int main() {
     system(CLEAR_SCREEN);
     char *jogador;
 
-    //disclaimer();
-    //introducao(&jogador);
+    // disclaimer();
+    // introducao(&jogador);
+    Rank *rankHead = NULL, *rankTail = NULL;
+    loadRank(&rankHead, &rankTail);
+    Room *roomsHead = NULL, *roomsTail = NULL;
+    circLoadRooms(&roomsHead, &roomsTail);
+    Actor *finalBoss = loadActor("erico");
     Player player;
     startPlayer(&player);
-    Room *root;
-    Room *roomsHead = NULL, *roomsTail = NULL;
-    int totalRooms = circLoadRooms(&roomsHead, &roomsTail);
-    Room *n = roomsHead;
-    do{
-        printf("%s\n", n->text);
-        n = n->right;
-    }while(n != roomsHead);
-    createMapAVL(&root, &roomsHead, &roomsTail, totalRooms);
-
-    gamePlayLoop(&player, root);
-    // player.weapon = loadItem("espada temporal");
-    // Actor *enemy = loadActor("leveza");
-    // player.ally = loadActor("moribundo");
-
-
-    // player.inventory[0] = loadItem("pot de cura");
-    // player.inventory[1] = loadItem("pot de energia");
-    // player.inventory[2] = loadItem("areia");
-    // player.inventory[3] = loadItem("pedras pontudas");
-    // player.inventory[4] = loadItem("bola de cristal");
-    // player.inventory[5] = loadItem("12345678901234567890");
-    // //printf("%d\n", player.inventory[2].);
-    // //useItem(&player, NULL, NULL, 0);
-    // textoPreRanking("cesar", 3);
-
-    // battle(&player, enemy);
-
-    // Rank *head = NULL, *tail = NULL, *n = NULL;
-
-    // loadRank(&head, &tail);
-    // Rank um = {"um", 100};
-    // Rank dois = {"dois", 200};
-    // Rank tres = {"tres", 300};
-    // Rank quatro = {"quatro", 400};
-    // Rank cinco = {"cinco", 500};
-
-
-    // insertRank(&head, &tail, &cinco);
-    // insertRank(&head, &tail, &quatro);
-    // insertRank(&head, &tail, &tres);
-    // insertRank(&head, &tail, &dois);
-    // insertRank(&head, &tail, &um);
+    strcpy(player.name, jogador);
     
-
-    // sortRank(&head, &tail);
-    // showRank(head);
-
-    // saveRank(&head, &tail);
+    gamePlayLoop(&player, roomsHead);
+    royalMenu(&player);
+    char * finalText = "Ao sair do castelo, você é surpreendido, ali no meio da floresta estava o seu desafio final\n"
+    "Erico o Terrível, andando com sua prancha mágica e com seu dinossauro de estimação ao lado\n"
+    "você sabe que não pode perder essa oportunidade e vai desafiá-lo sem pensar muito\n";
+    charPrint(finalText);
+    sleep(3);
+    battle(&player, finalBoss);
+    if(player.health > 0){
+        player.points += 1000;
+        charPrint("Você conseguiu vencer o desafio, mas será que é o suficiente para não ser exilado?\n");
+        sleep(4);
+        Rank rank;
+        strcpy(rank.name, player.name);
+        rank.points = player.points;
+        insertRank(&rankHead, &rankTail, &rank);
+        sortRank(&rankHead, &rankTail);
+        showRank(rankHead);
+        saveRank(&rankHead, &rankTail);
+    }else{
+        charPrint("Infelizmente você foi derrotado e será exilado para o reino de Nassau!\n");
+        showRank(rankHead);
+        sleep(3);
+    }
     
-
-    //gamePlayLoop(&player, &room);
-
-
-
-    // player.armor = loadItem("");
-    // player.weapon = loadItem("");
-    // if(player.armor){
-    //     printf("[armor - %s]\n", player.armor->name);
-    // }else{
-    //     printf("[armor - nada]\n");
-    // }
-    // if(player.weapon){
-    //     printf("[weapon - %s]\n", player.weapon->name);
-    // }else{
-    //     printf("[weapon - nada]\n");
-    // }
-
-    // Item *item = loadItem("areia");
-
-    // grabItem(&player, item);
-
-    // if(player.armor){
-    //     printf("[armor - %s]\n", player.armor->name);
-    // }else{
-    //     printf("[armor - nada]\n");
-    // }
-    // if(player.weapon){
-    //     printf("[weapon - %s]\n", player.weapon->name);
-    // }else{
-    //     printf("[weapon - nada]\n");
-    // }
-
-    // showInventory(&player);
-    
-    // Faça o que for necessário com o nome do jogador
-    // Limpa a tela antes de exibir o disclaimer
     //system(CLEAR_SCREEN);
     // Faça o que for necessário após o disclaimer
     // Libera a memória alocada para o nome do jogador
