@@ -59,6 +59,13 @@ typedef struct Room {
   struct Room *right;
 } Room;
 
+typedef struct castleTree{
+    char *text;
+    int id;
+    struct castleTree *left;
+    struct castleTree *right;
+} castleTree;
+
 typedef struct Player {
   char name[21];
   int points;
@@ -110,9 +117,17 @@ void gamePlayLoop(Player *player, Room *rootRoom);
 void roomOptions(Player *player, Room *room);
 void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank);
 void sortRank(Rank **rankHead, Rank **rankTail);
+void pressEnter();
 
 //liberar memória
 
 void freeItem(Item *item);
+
+void dialogTreeInsert(castleTree *enredo, castleTree **root);
+int joyce(Player *player);
+int thiago (Player *player);
+int pamela (Player *player);
+int ricardo (Player *player);
+
 
 #endif
