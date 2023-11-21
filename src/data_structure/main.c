@@ -10,40 +10,25 @@ int main() {
     system(CLEAR_SCREEN);
     char *jogador;
 
-    // disclaimer();
-    // introducao(&jogador);
+    //disclaimer();
+    //introducao(&jogador);
     Player player;
-    Room room;
-
     startPlayer(&player);
+    Room *root;
+    Room *roomsHead = NULL, *roomsTail = NULL;
+    int totalRooms = circLoadRooms(&roomsHead, &roomsTail);
+    Room *n = roomsHead;
+    do{
+        printf("%s\n", n->text);
+        n = n->right;
+    }while(n != roomsHead);
+    createMapAVL(&root, &roomsHead, &roomsTail, totalRooms);
 
-    Rank *head = NULL, *tail = NULL, *n = NULL;
+    gamePlayLoop(&player, root);
+    // player.weapon = loadItem("espada temporal");
+    // Actor *enemy = loadActor("leveza");
+    // player.ally = loadActor("moribundo");
 
-    loadRank(&head, &tail);
-    Rank um = {"um", 10};
-    Rank dois = {"dois", 20};
-    Rank tres = {"tres", 30};
-    Rank quatro = {"quatro", 40};
-    Rank cinco = {"cinco", 50};
-
-
-    insertRank(&head, &tail, &cinco);
-    insertRank(&head, &tail, &quatro);
-    insertRank(&head, &tail, &tres);
-    insertRank(&head, &tail, &dois);
-    insertRank(&head, &tail, &um);
-    insertRank(&head, &tail, &dois);
-    insertRank(&head, &tail, &tres);
-    insertRank(&head, &tail, &quatro);
-    insertRank(&head, &tail, &cinco);
-
-    
-    showRank(head);
-
-    saveRank(&head, &tail);
-    
-
-    //gamePlayLoop(&player, &room);
 
     // player.inventory[0] = loadItem("pot de cura");
     // player.inventory[1] = loadItem("pot de energia");
@@ -51,6 +36,37 @@ int main() {
     // player.inventory[3] = loadItem("pedras pontudas");
     // player.inventory[4] = loadItem("bola de cristal");
     // player.inventory[5] = loadItem("12345678901234567890");
+    // //printf("%d\n", player.inventory[2].);
+    // //useItem(&player, NULL, NULL, 0);
+    // textoPreRanking("cesar", 3);
+
+    // battle(&player, enemy);
+
+    // Rank *head = NULL, *tail = NULL, *n = NULL;
+
+    // loadRank(&head, &tail);
+    // Rank um = {"um", 100};
+    // Rank dois = {"dois", 200};
+    // Rank tres = {"tres", 300};
+    // Rank quatro = {"quatro", 400};
+    // Rank cinco = {"cinco", 500};
+
+
+    // insertRank(&head, &tail, &cinco);
+    // insertRank(&head, &tail, &quatro);
+    // insertRank(&head, &tail, &tres);
+    // insertRank(&head, &tail, &dois);
+    // insertRank(&head, &tail, &um);
+    
+
+    // sortRank(&head, &tail);
+    // showRank(head);
+
+    // saveRank(&head, &tail);
+    
+
+    //gamePlayLoop(&player, &room);
+
 
 
     // player.armor = loadItem("");

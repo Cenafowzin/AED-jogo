@@ -22,8 +22,7 @@ void milliSleep(unsigned long milliseconds){
 }
 
 //Cena de apresentação do ranking caso jogador chegue no fim
-char textoPreRanking(char jogador, int ranking){
-    setUtf8Encoding();
+void textoPreRanking(char jogador, int ranking){
     char *vetor[9];
     for (int i = 0; i < 10; ++i){
         vetor[i] = (char *)malloc(256 * sizeof(char)); // Tamanho arbitrário; ajuste conforme necessário
@@ -66,7 +65,7 @@ char textoPreRanking(char jogador, int ranking){
             // aguarda 1 segundo e limpa a tela
             sleep(1);
             printf("\n");
-            // system(CLEAR_SCREEN);
+            system(CLEAR_SCREEN);
         }
         printf("\n"); // Pula uma linha após imprimir toda a string
         milliSleep(200);
@@ -643,7 +642,7 @@ void startPlayer(Player *player){
     for(int i = 0; i<6; i++){
         player->inventory[i] = loadItem("");
     }
-    player->companion = loadActor("");
+    player->ally = loadActor("");
 }
 
 //Libera a memória de um item
@@ -651,6 +650,41 @@ void freeItem(Item *item){
     free(item->name);
     free(item->text);
     free(item);
+}
+
+//Libera a memória de um ataque
+void freeMove(Move *move){
+    free(move->name);
+    free(move->text);
+    free(move);
+}
+
+//Libera a memória de um personagem
+void freeActor(Actor *actor){
+    free(actor->name);
+    free(actor->text);
+    if(actor->itemDrop){
+        freeItem(actor->itemDrop);
+    }
+    for(int i = 0; i < 4; i++){
+        freeMove(actor->moves[i]);
+    }
+    free(actor);
+}
+
+//Libera a memória de uma sala
+void freeRoom(Room *room){
+    free(room->text);
+    if(room->enemy){
+        freeActor(room->enemy);
+    }
+    if(room->ally){
+        freeActor(room->ally);
+    }
+    if(room->loot){
+        freeItem(room->loot);
+    }
+    free(room);
 }
 
 //Rolagem de dado para combate
@@ -793,10 +827,266 @@ void grabMoney(Player *player, int money){
     sleep(2);
 }
 
+//Trata a batalha
+void battle(Player *player, Actor *enemy){
+    time_t t;
+    srand((unsigned) time(&t));
+    int turn = (rand()%3)+1;
+    int choice, roll, defending = 0, escape = 0;
+    int playerStun = 0, allyStun = 0, enemyStun = 0;
+    Item playerTempStatus = {NULL,NULL,0,0,0,0,0,0};
+    Item allyTempStatus = {NULL,NULL,0,0,0,0,0,0};
+    Item enemyTempStatus = {NULL,NULL,0,0,0,0,0,0};
+    char *combatChoices = "Oque você vai fazer?\n"
+    "[1-Atacar]    [2-Defender]\n[3-Usar item] [4-Fugir]\n";
+
+    while(player->health > 0 && enemy->health > 0 && escape != 1){//quabra caso algum seja derrotado
+        system(CLEAR_SCREEN);
+        printf("Pontos de vida: %d/100\n\n", player->health, turn, defending);
+
+        if(turn == PLAYER_TURN){//turno do jogador
+            printf("Sua vez!\n");
+            defending = 0;
+            while(escape != 1 && playerStun < 1){
+                charPrint(combatChoices);
+                scanf("%d", &choice);
+                if(choice == 1){//atacar
+                    roll = rollD20();
+
+                    if((roll + ((player->weapon) ? player->weapon->attackMod : 0) + playerTempStatus.attackMod) >= (enemy->armorClass+enemyTempStatus.defenseMod)){
+                        printf("Você acerta se golpe desferindo %d de dano ao adversário!\n", ((player->weapon) ? player->weapon->damage : 1));
+                        enemy->health -= ((player->weapon) ? player->weapon->damage : 1);
+                        sleep(4);
+                        break;
+                    }else{
+                        printf("Você erra!\n");
+                        sleep(2);
+                        break;
+                    }
+                }else if(choice == 2){//defender
+                    roll = rollD20();
+                    if(roll > 12){
+                        printf("Você se posiciona melhor e se prepara para o próximo golpe do adversário!\n");
+                        defending = 1;
+                        sleep(4);
+                        break;
+                    }else{
+                        printf("Você tenta ficar mais protegido, porém seu adversário parece ter notado sua manobra.\n");
+                        sleep(4);
+                        break;
+                    }
+                }else if(choice == 3){//usar item
+                    if(useItem(player, enemy, &enemyTempStatus, &enemyStun)){
+                        break;
+                    }
+                    system(CLEAR_SCREEN);
+                    printf("Pontos de vida: %d/100\n\n", player->health, turn, defending);
+                }else if(choice == 4){//fugir
+                    roll = rollD20();
+                    if(roll - enemy->moves[0]->attackMod > 15){
+                        printf("Você se aproveita de um momento de desatenção do seu adversário e corre pela sua vida.\n");
+                        sleep(4);
+                        escape = 1;
+                    }else{
+                        printf("Você não consegue achar uma brecha para fugir!\n");
+                        sleep(4);
+                        break;
+                    }
+                }
+            }
+            if(playerStun > 0){
+                printf("Você perdeu a vez!\n");
+                playerStun--;
+                sleep(3);
+            }
+
+        }else if(turn == ENEMY_TURN || turn == ALLY_TURN){// turno do inimigo
+            int moveNumber = rand()%4;
+            int target = rand()%2;
+            roll = rollD20();
+
+            if(turn == ENEMY_TURN && enemyStun > 0){// perde a vez do inimigo se tiver stun
+                printf("Vez do adversário!\n");
+                printf("Seu adversário %s perdeu a vez!\n", enemy->name);
+                enemyStun--;
+                sleep(3);
+                
+            }else if(player->ally && turn == ALLY_TURN && allyStun > 0){// perde a vez do aliado se tiver stun
+                printf("Vez do aliado!\n");
+                printf("Seu aliado %s perdeu a vez!\n", player->ally->name);
+                allyStun--;
+                sleep(3);
+
+            }else if(turn == ENEMY_TURN && (!player->ally || target == 0)){// inimigo ataca o player
+                printf("Vez do adversário!\n");
+                if((roll + enemy->moves[moveNumber]->attackMod) > (player->armorClass + playerTempStatus.defenseMod)){
+                    charPrint(enemy->moves[moveNumber]->text);// descreve ataque
+                    printf("\n");
+
+                    //aplica modificadores no player
+                    if(enemy->moves[moveNumber]->damage > 0){// dano
+                        if(defending == 1){
+                            printf("Você recebeu %d de dano\n", (enemy->moves[moveNumber]->damage/2));
+                            player->health -= (enemy->moves[moveNumber]->damage/2);
+                        }else{
+                            printf("Você recebeu %d de dano\n", enemy->moves[moveNumber]->damage);
+                            player->health -= enemy->moves[moveNumber]->damage;
+                        }
+                    }
+                    if(enemy->moves[moveNumber]->armorMod > 0){// diminui armadura
+                        printf("Sua armadura foi danificada (%d Def)\n", enemy->moves[moveNumber]->armorMod);
+                        playerTempStatus.defenseMod = enemy->moves[moveNumber]->armorMod;
+                    }
+                    if(enemy->moves[moveNumber]->stunRounds > 0){// stun
+                        printf("Você vai precisar se recuperar um pouco depois dessa (%d rounds de stun)\n", enemy->moves[moveNumber]->stunRounds);
+                        playerStun = enemy->moves[moveNumber]->stunRounds;
+                    }
+                    sleep(4);
+                }else{
+                    printf("%s errou o ataque!\n", enemy->name);
+                    sleep(3);
+                }
+            }else if(turn == ENEMY_TURN){ // inimigo ataca o aliado
+                printf("Vez do adversário!\n");
+                if((roll + enemy->moves[moveNumber]->attackMod) > (player->ally->armorClass + allyTempStatus.defenseMod)){
+                    charPrint(enemy->moves[moveNumber]->text);// descreve ataque
+                    printf("\n");
+
+                    //aplica modificadores no aliado
+                    if(enemy->moves[moveNumber]->damage > 0){// dano
+                        printf("%s recebeu %d de dano",player->ally->name , enemy->moves[moveNumber]->damage);
+                        player->ally->health -= enemy->moves[moveNumber]->damage;
+                    }
+                    if(enemy->moves[moveNumber]->armorMod > 0){// diminui armadura
+                        printf("A armadura de %s foi danificada (%d Def)\n", player->ally->name, enemy->moves[moveNumber]->armorMod);
+                        allyTempStatus.defenseMod = enemy->moves[moveNumber]->armorMod;
+                    }
+                    if(enemy->moves[moveNumber]->stunRounds > 0){// stun
+                        printf("%s vai precisar se recuperar um pouco depois dessa (%d rounds de stun)\n", player->ally->name,enemy->moves[moveNumber]->stunRounds);
+                        allyStun = enemy->moves[moveNumber]->stunRounds;
+                    }
+                    sleep(4);
+                }else{
+                    printf("%s errou o ataque!\n", enemy->name);
+                    sleep(4);
+                }
+            }else if (player->ally && turn == ALLY_TURN){// turno do aliado
+                printf("Vez do aliado!\n");
+                if((roll + player->ally->moves[moveNumber]->attackMod) > (enemy->armorClass + enemyTempStatus.defenseMod)){
+                    charPrint(player->ally->moves[moveNumber]->text);// descreve ataque
+                    printf("\n");
+
+                    //aplica modificadores no aliado
+                    if(player->ally->moves[moveNumber]->damage > 0){// dano
+                        printf("%s recebeu %d de dano\n",enemy->name , player->ally->moves[moveNumber]->damage);
+                        enemy->health -= player->ally->moves[moveNumber]->damage;
+                    }
+                    if(player->ally->moves[moveNumber]->armorMod > 0){// diminui armadura
+                        printf("A armadura de %s foi danificada (%d Def)\n", enemy->name, player->ally->moves[moveNumber]->armorMod);
+                        enemyTempStatus.defenseMod = player->ally->moves[moveNumber]->armorMod;
+                    }
+                    if(player->ally->moves[moveNumber]->stunRounds > 0){// stun
+                        printf("%s vai precisar se recuperar um pouco depois dessa (%d rounds de stun)\n", enemy->name, player->ally->moves[moveNumber]->stunRounds);
+                        allyStun = enemy->moves[moveNumber]->stunRounds;
+                    }
+                    sleep(4);
+                }else{
+                    printf("%s errou o ataque!\n", player->ally->name);
+                    sleep(3);
+                }
+            }
+        }
+        turn = ((turn%3)+1);
+        if(player->ally && player->ally->health < 1){
+            char *allyLoss = "\n\nSeu aliado foi derrotado!\nEle é levado de volta ao castelo pelas raízes mágicas da floresta\n";
+            charPrint(allyLoss);
+            freeActor(player->ally);
+            player->ally = NULL;
+            sleep(3);
+        }
+    }
+}
+
+//Trata o uso de um item
+int useItem(Player *player, Actor *enemy, Item *tempEnemy, int *enemyStun){
+    int choice, used = 0;
+    char *text = "Qual item deseja usar?\n";
+    inicio:
+    system(CLEAR_SCREEN);
+    printf("Pontos de vida: %d/100\n\n", player->health);
+    showInventory(player);
+    charPrint(text);
+    printf("[0-cancelar]\n");
+    scanf("%d", &choice);
+
+    if(choice > 6 || choice < 0){
+        printf("Opção inválida");
+        sleep(3);
+        goto inicio;
+    }else if(choice == 0){
+        return 0;
+    }else{
+        choice--;
+        if(!(player->inventory[choice])){
+            printf("Não tem nada aí\n");
+            sleep(3);
+            goto inicio;
+        }else{
+            if(!enemy && player->inventory[choice]->healthMod < 1){
+                printf("É melhor você usar isso em combate\n");
+                sleep(3);
+                goto inicio;
+            }else if(!enemy && (player->inventory[choice]->healthMod) > 0){
+                player->health += player->inventory[choice]->healthMod;
+                if(player->health > 100){
+                    player->health = 100;
+                }
+                printf("Você se sente revigorado, recuperou %d pontos de vida!\n", player->inventory[choice]->healthMod);
+                used = 1;
+                sleep(3);
+            }else if(enemy){
+                if(player->inventory[choice]->healthMod){
+                    printf("Você se sente revigorado, recuperou %d pontos de vida!\n", player->inventory[choice]->healthMod);
+                }
+                if(player->inventory[choice]->attackMod){
+                    tempEnemy->attackMod = player->inventory[choice]->attackMod;
+                    printf("Você usou %s para enfraquecer!\n", player->inventory[choice]->name);
+                }
+                if(player->inventory[choice]->damage){
+                    enemy->health -= player->inventory[choice]->damage;
+                    printf("Você usou %s e causou %d de dano no adversário!\n", player->inventory[choice]->name, player->inventory[choice]->damage);
+                }
+                if(player->inventory[choice]->defenseMod){
+                    tempEnemy->defenseMod = player->inventory[choice]->defenseMod;
+                    printf("Você usou %s enfraquecer a armadura do adversário!\n", player->inventory[choice]->name);
+                }
+                if(player->inventory[choice]->healthMod < 0){
+                    enemyStun = (player->inventory[choice]->healthMod * (-1));
+                    printf("Você usou %s para atordoar o adversário!\n", player->inventory[choice]->name);
+                }
+                used = 1;
+                sleep(3);
+            }
+
+            if(player->inventory[choice]){
+                player->inventory[choice]->uses--;
+                if(player->inventory[choice]->uses == 0){
+                    freeItem(player->inventory[choice]);
+                    player->inventory[choice] = NULL;
+                }
+            }
+            if(used){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 //Loop principal de gameplay
 void gamePlayLoop(Player *player, Room *rootRoom){
     int choice;
-    Room *currentRoom = rootRoom, *level2 = NULL, *level3 = NULL;
+    Room *currentRoom = rootRoom, *level2 = NULL;
     char *starText = "Ao seguir o caminho inicial para dentro das florestas da Ceasar's Arena,\n"
     "após um tempo caminhando na mata fechada, você se encontra uma clareira.\n"
     "Um pouco afastado das árvores você vê a luz do sol sendo refletida de algum objeto\n"
@@ -813,7 +1103,7 @@ void gamePlayLoop(Player *player, Room *rootRoom){
     grabItem(player, startWeapon);
 
     //Loop de níveis
-    for(int level = 0; level < 3; level++){
+    for(int level = 0; level < 2; level++){
         system(CLEAR_SCREEN);
         char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
         "Qual lado faria você chegar mais próximo de seu sonho?\n"
@@ -827,16 +1117,12 @@ void gamePlayLoop(Player *player, Room *rootRoom){
             if(choice == 1){
                 if(currentRoom == rootRoom){ //marca inicio do level 2
                     level2 = currentRoom->right;
-                }else if(currentRoom == level2){//marca inicio do level 3
-                    level3 == currentRoom->right;
                 }
                 currentRoom = currentRoom->left;
                 break;
             }else if(choice == 2){
                 if(currentRoom == rootRoom){//marca inicio do level 2
                     level2 = currentRoom->left;
-                }else if(currentRoom == level2){//marca inicio do level 3
-                    level3 == currentRoom->left;
                 }
                 currentRoom = currentRoom->right;
                 break;
@@ -847,7 +1133,9 @@ void gamePlayLoop(Player *player, Room *rootRoom){
         }
 
         while(currentRoom->left && currentRoom->right){
-
+            roomOptions(player, currentRoom);
+            charPrint(choicePathText);
+            charPrint("[3 - Usar um item]\n");
         }
     }
 }
@@ -865,7 +1153,7 @@ void roomOptions(Player *player, Room *room){
     //introdução da sala
     charPrint(room->text);
 
-    if(room->damage != 0){//sala de armadilha
+    if(room->damage > 0){//sala de armadilha
         int roll = rollD20();
         if((roll + player->armor->defenseMod) > 15){
             printf("Seus reflexos afiados e armadura resistente o fizeram sofrer menos dano!\n");
@@ -876,7 +1164,7 @@ void roomOptions(Player *player, Room *room){
             printf("Você toma %d de dano!", room->damage);
             player->health -= room->damage;
         }
-    }else if(room->money != 0){//sala com dinheiro
+    }else if(room->money > 0){//sala com dinheiro
         grabMoney(player, room->money);
 
     }else if(room->loot){//sala com loot
@@ -885,19 +1173,22 @@ void roomOptions(Player *player, Room *room){
     }else if(room->ally){//sala de conversa
         //introdução do aliado
         charPrint(room->ally->text);
+
         while(1){
             scanf("%d", &choice);
-            if(choice == 1){
-                if(room->ally->moneyDrop){
-                    grabMoney(player, room->money);
+            if(choice == 1){// aceita oferta
+                if(room->ally->moneyDrop){// ganha dinheiro
+                    player->points += room->ally->moneyDrop;
+                    grabMoney(player, room->ally->moneyDrop);
                     return;
 
-                }else if(room->ally->itemDrop){
+                }else if(room->ally->itemDrop){//ganha item
                     player->points += ((room->ally->itemDrop->attackMod*5) + (room->ally->itemDrop->defenseMod*5));
                     grabItem(player, room->ally->itemDrop);
                     return;
                 }
-            }else if(choice == 2){
+            }else if(choice == 2){//rejeita oferta
+                player->points += 50;
                 system(CLEAR_SCREEN);
                 return;
             }
@@ -906,7 +1197,8 @@ void roomOptions(Player *player, Room *room){
     }else if(room->enemy){//sala de combate
         //introdução do inimigo
         charPrint(room->enemy->text);
-
+        sleep(4);
+        battle(player, room->enemy);
         //combate
     }
 }
@@ -934,8 +1226,7 @@ void sortRank (Rank **rankHead, Rank **rankTail){
         return;
     }
 
-    Rank *sorted, *unsorted, *temp;
-    sorted= *rankHead;
+    Rank *unsorted, *temp;
     unsorted = (*rankHead)->next;
     while(unsorted){
         temp = unsorted;

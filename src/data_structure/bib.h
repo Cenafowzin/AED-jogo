@@ -9,6 +9,9 @@
 
 #define ARMOR -1
 #define WEAPON -2
+#define PLAYER_TURN 1
+#define ENEMY_TURN 2
+#define ALLY_TURN 3
 
 typedef struct Rank{
   char name[21];
@@ -68,7 +71,7 @@ typedef struct Player {
   Item *armor;
   Item *weapon;
   Item *inventory[6];
-  Actor *companion;
+  Actor *ally;
 } Player;
 
 //introdução e preparação
@@ -76,7 +79,7 @@ typedef struct Player {
 void charPrint(char *texto);
 void milliSleep(unsigned long milliseconds);
 void setUtf8Encoding();
-char textoPreRanking (char jogador, int ranking);
+void textoPreRanking (char jogador, int ranking);
 void introducao (char **jogador);
 void disclaimer(void);
 
@@ -104,8 +107,10 @@ void saveRank(Rank **rankHead, Rank **rankTail);
 void startPlayer(Player *player);
 int rollD20();
 void showInventory(Player *player);
+int useItem(Player *player, Actor *enemy, Item *tempEnemy, int *enemyStun);
 void grabMoney(Player *player, int money);
 void grabItem(Player *player,Item *item);
+void battle(Player *player, Actor *enemy);
 void gamePlayLoop(Player *player, Room *rootRoom);
 void roomOptions(Player *player, Room *room);
 void insertRank(Rank **rankHead, Rank **rankTail, Rank *rank);
