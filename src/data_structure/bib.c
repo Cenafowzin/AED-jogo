@@ -1007,6 +1007,7 @@ void dialogTreeInsert(castleTree *enredo, castleTree **root){
 
 //precisa adicionar. Está pronta, mas falta ver um jeito de retornar a resposta 1, 2 ou 3
 int joyce(Player *player){
+    system(CLEAR_SCREEN);
     castleTree j1;
     castleTree *joyce=NULL;
     j1.id=3;
@@ -1053,11 +1054,13 @@ int joyce(Player *player){
                 if (joyce->right==NULL){
                     charPrint("Ok, vou anotar sua sugestão! Se você chegar até a final do torneio,\n"
                     "nós nos encontraremos mais uma vez\ne eu lhe digo o que aconteceu. Boa sorte!\n");
+                    pressEnter();
                     break;
                 }
             }else if(choice == 4){
                 if (joyce->right==NULL){
                     charPrint("Boa sorte no torneio!\n");
+                    pressEnter();
                     break;
                 }
             }else{
@@ -1070,6 +1073,7 @@ int joyce(Player *player){
         }else if(choice == 2){
             if (joyce->right==NULL){
                 charPrint("Boa sorte no torneio!\n");
+                pressEnter();
                 break;
             }
             //joyce = joyce->right;
@@ -1080,13 +1084,16 @@ int joyce(Player *player){
         }
     }
     if (joyce->id==1){
+        pressEnter();
         return 1;
     }else{
+        pressEnter();
         return 0;
     }
 }
 
 int thiago (Player *player){
+    system(CLEAR_SCREEN);
     castleTree t1;
     castleTree *thiago=NULL;
     t1.id=3;
@@ -1141,6 +1148,7 @@ int thiago (Player *player){
                     "Existem muitas árvores aqui. Entretanto está rolando um torneio, então cuidado para não \n"
                     "se perder e acabar tendo que enfrentar um dos guerreiros que a rainha Natacha trouxe. \n"
                     "Eles são muito poderosos. Até mais\n");
+                    pressEnter();
                     break;
                 }
             }else if (choice ==3){
@@ -1148,6 +1156,7 @@ int thiago (Player *player){
                     system(CLEAR_SCREEN);
                     charPrint("[Rainha] Que rapaz deselegante, vai embora sem me responder.\n"
                     "Vou anotar o nome dele no meu caderno para nunca me esquecer \n");
+                    pressEnter();
                     break;
                 }
             }else{
@@ -1160,6 +1169,7 @@ int thiago (Player *player){
         }else if(choice ==2){
             if (thiago->right==NULL){
                 charPrint("[Rei] ah, vejo que está com pressa. Adeus.\n");
+                pressEnter();
                 break;
             }
         }else{
@@ -1173,6 +1183,7 @@ int thiago (Player *player){
         //return 1;
         pamela(player);
     }else{
+        pressEnter();
         return 0;
     }
     
@@ -1228,6 +1239,7 @@ int pamela (Player *player){
         if (pamela->id==2&&choice == 2){
 
             charPrint("[Pâmela] Ok, então. Você faz o que quiser com sua vida. Boa sorte na competição!\n");
+            pressEnter();
             return 0;
         }else if (pamela->id==2){
             if (choice == 1){
@@ -1258,6 +1270,7 @@ int pamela (Player *player){
                 "apoiada no arco, ela deve estar no estojo, com a ponta virada para o fundo, que chamamos de NULL. Não tenho flechas aqui,\n"
                 "mas tenho o meu Arco Estruturado, que comprei em Camden Town, em Londres. Fique com ele para você! Procure algumas\n"
                 "flechas de ponteiros e use em suas batalhas. Boa sorte!\n");
+                
                 break;
             }
         }else{
@@ -1267,13 +1280,16 @@ int pamela (Player *player){
         }
     }
     if (pamela->id==1){
+        pressEnter();
         return 1;
     }else{
+        pressEnter();
         return 0;
     }
 }
 
 int ricardo (Player *player){
+    system(CLEAR_SCREEN);
     castleTree r1;
     castleTree *ricardo=NULL;
     r1.id=4;
@@ -1286,7 +1302,7 @@ int ricardo (Player *player){
     castleTree r2;
     r2.id=3;
     r2.text="[Bardo] Essa juventude de hoje não sabe o que foram os tempos sombrios de 40 anos atrás.\n"
-    "A rainha está mais que certa em montar o seu exército. Me diga, jovem, qual seu nome?\n[1 - continua]\n[2 - sai]\n";
+    "A rainha está mais que certa em montar o seu exército. Me diga, jovem, qual seu nome?\n[1 - responder]\n[2 - não responder]\n";
     r2.left=NULL;
     r2.right=NULL;
     dialogTreeInsert(&r2, &ricardo);
@@ -1330,18 +1346,22 @@ int ricardo (Player *player){
         if (choice == 2){
             if (ricardo->id==4){
                 charPrint("[Bardo] Esses jovens de hoje em dia... vou ficar tocando meu violino que é o melhor que eu faço.\n");
+                pressEnter();
                 return 0;
             }else if(ricardo->id==3){
                 charPrint("– [Bardo]  Bom, eu saberei seu nome quando sair na lista de cavaleiros ou exilados, não é mesmo?\nBoa sorte no torneio.\n");
+                pressEnter();
                 return 0;
             }else if(ricardo->id==2){
                 charPrint("[Você] Que mentira! Um bardo como você, guarda pessoal do rei? \n"
                     "Nem aqui, nem no reino de Nassau! Mais fácil um boi voar. Inclusive, eu soube que fizeram isso lá,\n"
                     "que um boi voou na inauguração da ponte que a conecta com o reino vizinho de Recife.\n"
                     "Enfim, vou-me embora. Até mais, bardo!\n");
+                pressEnter();
                 return 0;
             }else if(ricardo->id==2){
                 charPrint("[Bardo] Tudo bem. Boa sorte na sua jornada!\n");
+                pressEnter();
                 return 0;
             }
         }else if (ricardo->id==2){
@@ -1375,10 +1395,54 @@ int ricardo (Player *player){
     }
     if (ricardo->id==1 && choice == 1){
         charPrint("Ótimo! Vamos indo, vou tocar muitas músicas na nossa jornada!\n");
+        pressEnter();
         return 1;
     }else{
+        pressEnter();
         return 0;
     }
+}
+
+void royalMenu (Player *player){
+    int j=-1, t=-1, r=-1, choice=0;
+    charPrint("Você acabou de entrar no Salão Real.\n\nVocê está vendo um Rei e uma Rainha conversando, um bardo tocando violino, e a Rainha Natacha conversando com uma pessoa.\n\nO que deseja fazer?\n\n");
+    while (t<0||r<0||j<0){
+        if (t<0){
+            charPrint("[1 - Ir em direção ao Rei e a Rainha]\n");
+        }else{
+            printf("\n");
+        }
+        if (r<0){
+            charPrint("[2 - Ir em direção ao bardo]\n");
+        }else{
+            printf("\n");
+        }
+        if (j<0){
+            charPrint("[3 - Ir em direção à Rainha Natacha]\n");
+        }else{
+            printf("\n");
+        }
+        charPrint("[4 - Sair do Salão Real]\n");
+        scanf("%d", &choice);
+        getchar();
+        
+
+        if (choice == 1){
+            t=thiago(player);
+        }else if(choice == 2){
+            r=ricardo(player);
+        }else if(choice == 3){
+            j=joyce(player);
+        }else if(choice == 4){
+            break;
+        }else{
+            system(CLEAR_SCREEN);
+            printf("Escolha uma opção válida!\n\n");
+        }
+        system(CLEAR_SCREEN);
+        charPrint("Para onde deseja ir agora?\n\n");
+    }
+    charPrint("Você já fez o que tinha que fazer. Vamos embora, que uma jornada nos aguarda\n");    
 }
 
  

@@ -128,6 +128,8 @@ int joyce(Player *player);
 int thiago (Player *player);
 int pamela (Player *player);
 int ricardo (Player *player);
+void royalMenu (Player *player);
+
 
 
 #endif
