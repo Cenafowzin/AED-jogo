@@ -83,6 +83,8 @@ typedef struct Player {
 
 //introdução e preparação
 
+void mainMenu(char **jogador, Rank *rankHead);
+
 void charPrint(char *texto);
 void milliSleep(unsigned long milliseconds);
 void setUtf8Encoding();

@@ -10,8 +10,8 @@ int main() {
     system(CLEAR_SCREEN);
     char *jogador;
 
-    // disclaimer();
-    // introducao(&jogador);
+    disclaimer();
+    introducao(&jogador);
     Rank *rankHead = NULL, *rankTail = NULL;
     loadRank(&rankHead, &rankTail);
     Room *roomsHead = NULL, *roomsTail = NULL;

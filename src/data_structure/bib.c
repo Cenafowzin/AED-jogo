@@ -108,6 +108,38 @@ void charPrint(char *texto){
         milliSleep(20);
     }
 }
+void mainMenu(char **jogador, Rank *rankHead){
+    system(CLEAR_SCREEN);
+    int choice;
+    charPrint("\t\tCAVALEIROS DE AEDÔNIA\n\n\n");
+    sleep(0.5);
+    charPrint("\t\t Escolha uma opção:\n\n");
+    charPrint("\t\t[   1 - JOGAR     ]\n");
+    charPrint("\t\t[   2 - RANKING   ]\n");
+    charPrint("\t\t[   3 - SAIR      ]\n");
+    scanf("%d", &choice);
+    getchar();
+    switch (choice){
+        case 1:
+            disclaimer();
+            introducao(&jogador);
+            break;
+        case 2:
+            showRank(rankHead);
+            mainMenu(&jogador, rankHead);
+            break;
+        case 3:
+            exit(0);
+            break;
+        default:
+            system(CLEAR_SCREEN);
+            printf("\t\tEscolha uma opção válida!\n\n");
+            sleep(1);
+            mainMenu(&jogador, rankHead);
+            break;
+    }
+}
+
 
 //Cena de introdução
 void introducao(char **jogador){
@@ -194,8 +226,7 @@ void introducao(char **jogador){
         if (i == 12){
             // recebe input vazio e limpa a tela
             printf("\nVamos começar?\n");
-            char c;
-            scanf("%c", &c);
+            pressEnter();
             system(CLEAR_SCREEN);
         }
 

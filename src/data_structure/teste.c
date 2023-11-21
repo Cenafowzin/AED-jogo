@@ -105,6 +105,7 @@ Actor *loadActor(const char *name);
 Move *loadMove(const char *name);
 void introducao(char **jogador);
 void pressEnter();
+void showRank(Rank *rankHead);
 //precisa adicionar. Está pronta
 void dialogTreeInsert(castleTree *enredo, castleTree **root){
     if (*root == NULL){
@@ -506,7 +507,7 @@ int ricardo (Player *player){
         return 0;
     }
 }
-
+void disclaimer(void);
 void royalMenu (Player *player){
     int j=-1, t=-1, r=-1, choice=0;
     charPrint("Você acabou de entrar no Salão Real.\n\nVocê está vendo um Rei e uma Rainha conversando, um bardo tocando violino, e a Rainha Natacha conversando com uma pessoa.\n\nO que deseja fazer?\n\n");
@@ -548,22 +549,85 @@ void royalMenu (Player *player){
     }
     charPrint("Você já fez o que tinha que fazer. Vamos embora, que uma jornada nos aguarda\n");    
 }
+void mainMenu(char **jogador, Rank *rankHead);
 
 int main(){
     setUtf8Encoding();
     system(CLEAR_SCREEN);
     Room room;
     Player player;
-    
+    Rank *rankHead = NULL;
+    char *jogador;
     startPlayer(&player);
+    mainMenu(&jogador, rankHead);
     //gamePlayLoop(&player, &room);
-    royalMenu(&player);
+    //royalMenu(&player);
     //introducao(&player.name);
     return 0;
     
 }
+void disclaimer(void){
+    setUtf8Encoding();
+    // Limpa a tela
+    system(CLEAR_SCREEN);
 
+    // Aguarda por 2 segundos
+    sleep(1);
+    printf("Esta obra é fictícia e qualquer semelhança com pessoas reais,\n"
+           "vivas ou mortas, é mera coincidência. Eventuais referências a eventos\n"
+           "históricos, locais ou situações são puramente coincidentais e não devem\n"
+           "ser interpretadas como fatos reais. Qualquer analogia com a realidade é\n"
+           "completamente não intencional. Este é um produto de ficção e destina-se\n"
+           "exclusivamente para entretenimento.\n");
 
+    // Aguarda por 5 segundos
+    sleep(5);
+
+    // Limpa a tela
+    system(CLEAR_SCREEN);
+
+    printf("Classificação PEGI 7: Este jogo é recomendado para maiores de 7 anos.\n"
+           "Pode conter formas leves de violência ou linguagem, moderadas e não perturbadoras para crianças mais novas.\n"
+           "Os pais devem considerar o conteúdo antes de permitir que seus filhos joguem.\n");
+    // Aguarda por 5 segundos
+    sleep(5);
+    // Exibe a mensagem preta na tela
+    system(CLEAR_SCREEN);
+    // Aguarda por 2 segundos
+    sleep(1);
+    fflush(stdout);
+}
+void mainMenu(char **jogador, Rank *rankHead){
+    system(CLEAR_SCREEN);
+    int choice;
+    charPrint("\t\tCAVALEIROS DE AEDÔNIA\n\n\n");
+    sleep(0.5);
+    charPrint("\t\t Escolha uma opção:\n\n");
+    charPrint("\t\t[   1 - JOGAR     ]\n");
+    charPrint("\t\t[   2 - RANKING   ]\n");
+    charPrint("\t\t[   3 - SAIR      ]\n");
+    scanf("%d", &choice);
+    getchar();
+    switch (choice){
+        case 1:
+            disclaimer();
+            introducao(&jogador);
+            break;
+        case 2:
+            showRank(rankHead);
+            mainMenu(&jogador, rankHead);
+            break;
+        case 3:
+            exit(0);
+            break;
+        default:
+            system(CLEAR_SCREEN);
+            printf("\t\tEscolha uma opção válida!\n\n");
+            sleep(1);
+            mainMenu(&jogador, rankHead);
+            break;
+    }
+}
 
 
 
@@ -579,6 +643,36 @@ void charPrint(char *texto){
         milliSleep(20);
     }
 }
+//Mostra o ranking
+void showRank(Rank *rankHead){
+    int choice;
+    Rank *current = rankHead;
+    while(1){
+        system(CLEAR_SCREEN);
+        int i=0;
+        charPrint("------------Ranking------------\n");
+        while (current){
+            if(i == 20){
+                charPrint("\nExilado para o Reino de Nassau\n");
+            }
+            printf("%.2d > ", i+1);
+            charPrint(current->name);
+            printf(" - %d\n", current->points);
+            current = current->next;
+            i++;
+        }
+        charPrint("-------------------------------\n");
+        printf("[1-sair]\n");
+        scanf("%d", &choice);
+        if(choice == 1){
+            return;
+        }else{
+            current = rankHead;
+        }
+    }
+}
+
+
 void gamePlayLoop(Player *player, Room *rootRoom){
 
     //setUtf8Encoding();
@@ -721,8 +815,7 @@ void introducao(char **jogador){
         if (i == 12){
             // recebe input vazio e limpa a tela
             printf("\nVamos começar?\n");
-            char c;
-            scanf("%c", &c);
+            pressEnter();
             system(CLEAR_SCREEN);
         }
 
