@@ -55,8 +55,8 @@ void textoPreRanking(char jogador, int ranking){
             printf("%c", vetor[i][j]);
             fflush(stdout); // Certifica-se de que a saída é exibida imediatamente
             if (i == 7){
-                milliSleep(350);
-                sleep(1);
+                milliSleep(40);
+                
             }else{
                 milliSleep(20);
             }
