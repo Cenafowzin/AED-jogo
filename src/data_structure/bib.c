@@ -766,7 +766,6 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }
 
@@ -787,7 +786,6 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }else{
             while(1){
@@ -819,7 +817,6 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }
     }
