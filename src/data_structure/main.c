@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <time.h>
 #include "bib.h"
-#include "bib.c"
 
 int main() {
     setUtf8Encoding();
@@ -33,12 +32,12 @@ int main() {
     insertRank(&head, &tail, &tres);
     insertRank(&head, &tail, &dois);
     insertRank(&head, &tail, &um);
-  
+    insertRank(&head, &tail, &dois);
+    insertRank(&head, &tail, &tres);
+    insertRank(&head, &tail, &quatro);
+    insertRank(&head, &tail, &cinco);
 
-    //printf(".");
-
-    sortRank(&head, &tail);
-
+    
     showRank(head);
 
     saveRank(&head, &tail);
