@@ -109,7 +109,6 @@ void charPrint(char *texto){
     }
 }
 void mainMenu(){
-    inicio:
     system(CLEAR_SCREEN);
     int choice;
     charPrint("\t\tCAVALEIROS DE AEDÔNIA\n\n\n");
@@ -131,12 +130,14 @@ void mainMenu(){
             startPlayer(&player);
             strcpy(player.name, jogador);
             gamePlayLoop(&player, root);
-            goto inicio;
+            mainMenu();
+            break;
         case 2:
             Rank *rankHead = NULL, *rankTail = NULL;
             loadRank(&rankHead, &rankTail);
             showRank(rankHead);
-            goto inicio;
+            mainMenu();
+            break;
         case 3:
             exit(0);
             break;
@@ -144,9 +145,9 @@ void mainMenu(){
             system(CLEAR_SCREEN);
             printf("\t\tEscolha uma opção válida!\n\n");
             sleep(1);
-            goto inicio;
+            mainMenu();
+            break;
     }
-    goto inicio;
 }
 
 
