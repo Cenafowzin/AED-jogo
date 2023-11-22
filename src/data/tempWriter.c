@@ -313,7 +313,7 @@ int main(){
   //writeItem();
   //writeMove();
   //writeActor();
-  writeRoom();
+  //writeRoom();
   //writeBossRoom();
   return 0;
 }

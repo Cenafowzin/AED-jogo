@@ -1,1 +1,0 @@
-gcc -m32 -o game main.c bib.c bib.h -Wall

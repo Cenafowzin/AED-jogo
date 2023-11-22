@@ -83,6 +83,7 @@ typedef struct Player {
 
 //introdução e preparação
 
+void mainMenu();
 void charPrint(char *texto);
 void milliSleep(unsigned long milliseconds);
 void setUtf8Encoding();

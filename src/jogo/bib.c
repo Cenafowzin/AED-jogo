@@ -108,6 +108,47 @@ void charPrint(char *texto){
         milliSleep(20);
     }
 }
+void mainMenu(){
+    inicio:
+    system(CLEAR_SCREEN);
+    int choice;
+    charPrint("\t\tCAVALEIROS DE AEDÔNIA\n\n\n");
+    sleep(0.5);
+    charPrint("\t\t Escolha uma opção:\n\n");
+    charPrint("\t\t[   1 - JOGAR     ]\n");
+    charPrint("\t\t[   2 - RANKING   ]\n");
+    charPrint("\t\t[   3 - SAIR      ]\n");
+    scanf("%d", &choice);
+    getchar();
+    switch (choice){
+        case 1:
+            char jogador[21];
+            Room *roomsHead = NULL, *roomsTail = NULL, *root = NULL;
+            int totalRooms = circLoadRooms(&roomsHead, &roomsTail);
+            createMapAVL(&root, &roomsHead, &roomsTail, totalRooms);
+            introducao(&jogador);
+            Player player;
+            startPlayer(&player);
+            strcpy(player.name, jogador);
+            gamePlayLoop(&player, root);
+            goto inicio;
+        case 2:
+            Rank *rankHead = NULL, *rankTail = NULL;
+            loadRank(&rankHead, &rankTail);
+            showRank(rankHead);
+            goto inicio;
+        case 3:
+            exit(0);
+            break;
+        default:
+            system(CLEAR_SCREEN);
+            printf("\t\tEscolha uma opção válida!\n\n");
+            sleep(1);
+            goto inicio;
+    }
+    goto inicio;
+}
+
 
 //Cena de introdução
 void introducao(char **jogador){
@@ -194,8 +235,7 @@ void introducao(char **jogador){
         if (i == 12){
             // recebe input vazio e limpa a tela
             printf("\nVamos começar?\n");
-            char c;
-            scanf("%c", &c);
+            pressEnter();
             system(CLEAR_SCREEN);
         }
 
@@ -766,7 +806,6 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }
 
@@ -787,7 +826,6 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }else{
             while(1){
@@ -819,7 +857,6 @@ void grabItem(Player *player,Item *item){
                     system(CLEAR_SCREEN);
                     return;
                 }
-                system(CLEAR_SCREEN);
             }
         }
     }
@@ -1107,14 +1144,14 @@ void gamePlayLoop(Player *player, Room *rootRoom){
     "que atravessa do cabo até a ponta.\n\n";
     
     //Sala inicial
-    //charPrint(starText);
-
+    charPrint(starText);
     Item *startWeapon = loadItem("espada simplesmente encadeada");
-
-    //grabItem(player, startWeapon);
+    Item *startTickets = loadItem("ticket de feriado");
+    grabItem(player, startWeapon);
+    grabItem(player, startTickets);
 
     //Loop de níveis
-    for(int level = 0; level < 2; level++){
+    for(int level = 0; level < 2 && (player->health > 0); level++){
         system(CLEAR_SCREEN);
         char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
         "Qual lado faria você chegar mais próximo de seu sonho?\n"
@@ -1123,7 +1160,7 @@ void gamePlayLoop(Player *player, Room *rootRoom){
         "[1 - O caminho da esquerda]\n"
         "[2 - O caminho da direita]\n";
 
-        while(currentRoom->left && currentRoom->right){
+        while(currentRoom->left && currentRoom->right && (player->health > 0)){
             printf("AAAAAAAAA\n");
             printf("%d\n", currentRoom->id);
             roomOptions(player, currentRoom);
@@ -1153,7 +1190,37 @@ void gamePlayLoop(Player *player, Room *rootRoom){
                 goto inicio;
             }
         }
-        printf("acabou arvore\n");
+        if(level == 1){
+            royalMenu(player);
+            currentRoom = level2;
+        }else{
+            char *finalText = "Ao chegar nos limites da arena você se encontra com o adversário mais forte do continente Erico o terrível, \n"
+            "montado em sua prancha mágica e com seu dinossauro de estimação ao seu lado ele está preparado para te derrotar!\n"
+            "Chegaou a hora de provar que você é capaz de vence-lo e se tornar um defensor do reino.\n";
+            sleep(3);
+            charPrint(finalText);
+            Actor *erico = loadActor("erico");
+            battle(player, erico);
+        }
+    }
+    if(player->health > 0){
+        charPrint("Você conseguiu vencer o desafio e provou que é astuto, mas será que é o suficiente para não ser exilado?\n");
+        sleep(4);
+        Rank *rankHead = NULL, *rankTail = NULL;
+        loadRank(&rankHead, &rankTail);
+        Rank rank;
+        strcpy(rank.name, player->name);
+        rank.points = player->points;
+        insertRank(&rankHead, &rankTail, &rank);
+        sortRank(&rankHead, &rankTail);
+        showRank(rankHead);
+        saveRank(&rankHead, &rankTail);
+    }else{
+        Rank *rankHead = NULL, *rankTail = NULL;
+        loadRank(&rankHead, &rankTail);
+        charPrint("Infelizmente você foi derrotado e será exilado para o reino de Nassau!\n");
+        showRank(rankHead);
+        sleep(3);
     }
 }
 
