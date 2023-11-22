@@ -8,20 +8,24 @@
 int main() {
     setUtf8Encoding();
     system(CLEAR_SCREEN);
-    char *jogador;
+    char *jogador = "jose testa";
 
     // disclaimer();
-    // introducao(&jogador);
+    //introducao(&jogador);
     Rank *rankHead = NULL, *rankTail = NULL;
     loadRank(&rankHead, &rankTail);
-    Room *roomsHead = NULL, *roomsTail = NULL;
-    circLoadRooms(&roomsHead, &roomsTail);
+    Room *roomsHead = NULL, *roomsTail = NULL, *root = NULL;
+    int totalRooms = circLoadRooms(&roomsHead, &roomsTail);
+    createMapAVL(&root, &roomsHead, &roomsTail, totalRooms);
+    printf(">>>>%d<<<<", totalRooms);
+    sleep(2);
+
     Actor *finalBoss = loadActor("erico");
     Player player;
     startPlayer(&player);
     strcpy(player.name, jogador);
-    
-    gamePlayLoop(&player, roomsHead);
+
+    gamePlayLoop(&player, root);
     royalMenu(&player);
     char * finalText = "Ao sair do castelo, você é surpreendido, ali no meio da floresta estava o seu desafio final\n"
     "Erico o Terrível, andando com sua prancha mágica e com seu dinossauro de estimação ao lado\n"

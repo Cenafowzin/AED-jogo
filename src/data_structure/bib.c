@@ -549,8 +549,6 @@ void createMapAVL(Room **rootRoom, Room **circHead, Room **circTail, int totalRo
         fprintf(stderr, "Missing initial data to create map.");
         exit(1);
     }
-    time_t t;
-    srand((unsigned) time(&t));
 
     int randomPos;
     Room *circSelect = *circHead;
@@ -565,6 +563,8 @@ void createMapAVL(Room **rootRoom, Room **circHead, Room **circTail, int totalRo
             *circTail = NULL;
 
         }else{
+            time_t t;
+            srand((unsigned) time(&t));
             randomPos = (rand() % totalRooms);
 
             for(int i = 0; i < randomPos; i++){
@@ -1015,6 +1015,7 @@ void battle(Player *player, Actor *enemy){
     if(player->health > 0){
         player->points += enemy->moneyDrop;
         player->money += enemy->moneyDrop;
+        printf("\nVocê venceu o combate e ganhou %d Gitcoins\n", enemy->moneyDrop);
     }
 }
 
@@ -1106,106 +1107,87 @@ void gamePlayLoop(Player *player, Room *rootRoom){
     "que atravessa do cabo até a ponta.\n\n";
     
     //Sala inicial
-    charPrint(starText);
+    //charPrint(starText);
 
     Item *startWeapon = loadItem("espada simplesmente encadeada");
 
-    grabItem(player, startWeapon);
-
-    Actor *firstEnemy = loadActor("arqueiro de ponteiros");
-
-    charPrint(firstEnemy->text);
-    sleep(4);
-    battle(player, firstEnemy);
-
-    charPrint("Ao derrotar seu inimigo, você percebe seu arco no chão.\n\n");
-    player->points += rand()%200;
-    Item *arco = loadItem("arco estruturado");
-    grabItem(player, arco);
-
-    char * text2 = "Andando um pouco pela floresta você tem a sorte de encontrar um baú que parece fazer parte de uma grande árvore\n"
-    "dentro desse baú você encontra algumas coisas que podem ser úteis\n\n";
-    Item *pot = loadItem("ticket de feriado");
-    Item *machado = loadItem("machado circular duplamente encadeado");
-    Item *gpt = loadItem("cha de gpt");
-    Item *armadura = loadItem("roupa de pinguim");
-    charPrint(text2);
-    sleep(3);
-    grabItem(player, pot);
-    player->points += rand()%200;
-    grabItem(player, gpt);
-    player->points += rand()%200;
-    grabItem(player, machado);
-    player->points += rand()%200;
-    grabItem(player, armadura);
-    player->points += rand()%200;
-
-    charPrint("Andando pela floresta você acaba chegando em uma grande estrutura muito similar ao castelo da rainha\n");
-
-
+    //grabItem(player, startWeapon);
 
     //Loop de níveis
-    // for(int level = 0; level < 2; level++){
-    //     system(CLEAR_SCREEN);
-    //     char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
-    //     "Qual lado faria você chegar mais próximo de seu sonho?\n"
-    //     "Qual lado lado seria a melhor escolha?\n"
-    //     "Você não sabe, porém confia em seus instintos e segue...\n\n"
-    //     "[1 - O caminho da esquerda]\n"
-    //     "[2 - O caminho da direita]\n";
-    //     charPrint(choicePathText);
-    //     while(1){
-    //         scanf("%d", &choice);
-    //         if(choice == 1){
-    //             if(currentRoom == rootRoom){ //marca inicio do level 2
-    //                 level2 = currentRoom->right;
-    //             }
-    //             currentRoom = currentRoom->left;
-    //             break;
-    //         }else if(choice == 2){
-    //             if(currentRoom == rootRoom){//marca inicio do level 2
-    //                 level2 = currentRoom->left;
-    //             }
-    //             currentRoom = currentRoom->right;
-    //             break;
-    //         }else{
-    //             system(CLEAR_SCREEN);
-    //             printf("Escolha um caminho!\n\n[1 - O caminho da esquerda]\n[2 - O caminho da direita]\n");
-    //         }
-    //     }
+    for(int level = 0; level < 2; level++){
+        system(CLEAR_SCREEN);
+        char *choicePathText = "Após alguns minutos de caminhada você se depara com uma bifurcação em seu caminho\n"
+        "Qual lado faria você chegar mais próximo de seu sonho?\n"
+        "Qual lado lado seria a melhor escolha?\n"
+        "Você não sabe, porém confia em seus instintos e segue...\n\n"
+        "[1 - O caminho da esquerda]\n"
+        "[2 - O caminho da direita]\n";
 
-    //     while(currentRoom->left && currentRoom->right){
-    //         roomOptions(player, currentRoom);
-    //         charPrint(choicePathText);
-    //         charPrint("[3 - Usar um item]\n");
-    //     }
-    // }
+        while(currentRoom->left && currentRoom->right){
+            printf("AAAAAAAAA\n");
+            printf("%d\n", currentRoom->id);
+            roomOptions(player, currentRoom);
+            inicio:
+            charPrint(choicePathText);
+            charPrint("[3 - Usar um item]\n");
+            scanf("%d", &choice);
+            if(choice == 1){
+                if(currentRoom == rootRoom){ //marca inicio do level 2
+                    level2 = currentRoom->right;
+                }
+                currentRoom = currentRoom->left;
+                break;
+            }else if(choice == 2){
+                if(currentRoom == rootRoom){//marca inicio do level 2
+                    level2 = currentRoom->left;
+                }
+                currentRoom = currentRoom->right;
+                break;
+            }else if(choice == 3){
+                useItem(player, NULL, NULL, 0);
+                system(CLEAR_SCREEN);
+                goto inicio;
+            }else{
+                system(CLEAR_SCREEN);
+                printf("Escolha um caminho!\n");
+                goto inicio;
+            }
+        }
+        printf("acabou arvore\n");
+    }
 }
-
-// char *text; X
-// int damage; X
-// int money; X
-// Item *loot; X
-// Actor *enemy; X
-// Actor *ally; X
 
 //Realiza os eventos de cada sala
 void roomOptions(Player *player, Room *room){
+    if(!room){
+        printf("NULL\n");
+        return;
+    }
     int choice;
+    printf("id:%d", room->id);
+    printf("%s\n", room->text);
+    printf("money:%d\n", room->money);
+    printf("damage:%d\n", room->damage);
+    printf("ally:%p\n", room->ally);
+    printf("enemy:%p\n", room->enemy);
+    printf("loot:%p\n\n", room->loot);
     //introdução da sala
     charPrint(room->text);
+    printf("\n");
 
     if(room->damage > 0){//sala de armadilha
         int roll = rollD20();
-        if((roll + player->armor->defenseMod) > 15){
+        if((roll + ((player->armor) ? player->armor->defenseMod : 0)) > 15){
             printf("Seus reflexos afiados e armadura resistente o fizeram sofrer menos dano!\n");
-            printf("Você toma %d de dano.", (room->damage/2));
+            printf("Você toma %d de dano.\n", (room->damage/2));
             player->health -= (room->damage/2);
             player->points += room->damage/4;
         }else{
-            printf("Você toma %d de dano!", room->damage);
+            printf("Você toma %d de dano!\n", room->damage);
             player->health -= room->damage;
         }
+        sleep(4);
+        system(CLEAR_SCREEN);
     }else if(room->money > 0){//sala com dinheiro
         grabMoney(player, room->money);
 
@@ -1237,12 +1219,14 @@ void roomOptions(Player *player, Room *room){
         }
 
     }else if(room->enemy){//sala de combate
+        printf("INIMIGO\n");
         //introdução do inimigo
         charPrint(room->enemy->text);
         sleep(4);
         battle(player, room->enemy);
-        //combate
+        system(CLEAR_SCREEN);
     }
+
 }
 
 //-------------------------------------------------Rank--------------------------------------------------

@@ -171,7 +171,7 @@ void writeRoom(){
   int textSize = 0,itemNameSize = 0, enemyNameSize = 0, allyNameSize = 0, quantCop = 0;
 
   //cópias
-  printf("Digite a quantidade de cópias da sala:");
+  printf("Digite a quantidade de copias da sala:");
   scanf("%d", &quantCop);
   getchar();
   //texto
@@ -310,10 +310,10 @@ void writeBossRoom(){
 }
 
 int main(){
-  writeItem();
+  //writeItem();
   //writeMove();
   //writeActor();
-  //writeRoom();
+  writeRoom();
   //writeBossRoom();
   return 0;
 }
