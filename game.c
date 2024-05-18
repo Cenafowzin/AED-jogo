@@ -5,7 +5,7 @@
 #include <string.h>
 #include <include/SDL2/SDL.h>
 #include <include/SDL2/SDL_ttf.h>
-//teste
+
 char texto_pre_ranking (char jogador, int ranking);
 
 int main(int argc, char *argv[]) {
